@@ -23,23 +23,14 @@
   text-align: right;
   max-width: 30vw;
   font-size: 7vh;
-  border: 2px solid yellow;
-  overflow: hidden;
-}
-
-#inner-div {
-  float: right;
+  overflow-x: auto;
 }
 
 #old-inputs {
   text-align: right;
   font-size: 3vh;
-  border: 1px solid red;
   max-height: 6vh;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  direction: rtl;
+  overflow-x: auto;
 }
 
 .all-buttons {
