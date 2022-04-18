@@ -1,0 +1,89 @@
+.calculator {
+  background-color: blue;
+  width: 30vw;
+  height: 90vh;
+  display: grid;
+  grid-template-rows: 1.25fr 3fr;
+  margin: auto;
+  box-shadow: 0 0 15px 2px black;
+  border: blue 10px solid;
+  border-radius: 10px;
+}
+
+#display {
+  background-color: white;
+  max-height: 24vh;
+  border-radius: 10px;
+  box-shadow: 0 0 10px .2px white;
+  display: grid;
+  grid-template-rows: 1fr 3fr;
+}
+
+#input-div {
+  text-align: right;
+  max-width: 30vw;
+  font-size: 7vh;
+  border: 2px solid yellow;
+  overflow: hidden;
+}
+
+#inner-div {
+  float: right;
+}
+
+#old-inputs {
+  text-align: right;
+  font-size: 3vh;
+  border: 1px solid red;
+  max-height: 6vh;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  direction: rtl;
+}
+
+.all-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: .5fr 2.5fr;
+  gap: .5rem;
+}
+
+.top-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-row: 1 / 2;
+  gap: .5rem;
+}
+
+
+.bottom-row {
+  display: grid;
+  grid-row: 2 / 3;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-column: 1 / 4;
+  gap: 1rem;
+}
+
+.left, .middle, .right {
+  display: grid;
+  gap: 1rem;
+}
+
+.side-column {
+  display: grid;
+  grid-column: 4 / 5;
+  gap: 1rem;
+}
+
+button {
+  box-shadow: inset 0 0 5px 1px blue;
+  border-radius: 10px;
+  font-size: 1.3vw;
+}
