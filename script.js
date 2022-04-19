@@ -4,6 +4,7 @@ const buttons = document.querySelectorAll('button');
 let previousValue = '';
 let previousNum;
 let currentNum;
+let finale;
 const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')', '.'];
 
 buttons.forEach(button => button.addEventListener('click', displayNumbers));
@@ -74,51 +75,57 @@ function displayNumbers() {
   }
 }
 
-let oldValue;
-let oldSymbol;
-let newSolved = false;
-function operate() {
-  let currentValue = this.value;
-  let solved = makeEquation(previousNum);
-  
-  let newValue = inputDiv.textContent;
-  let index = newValue.indexOf(this.value);
-  newValue = newValue.substring(0, index);
-  
+let operator;
+let oldNum;
+let newNum;
+let equation;
+let solveFlag = false;
+let solved;
+let currentVal;
 
-  if (currentValue < 10 && newValue == solved) {
+function operate() {
+  currentVal = this.value;
+  solved = makeEquation(previousNum);
+  if (!isNaN(currentVal)) {
+    newNum += currentVal;
+    
+    console.log(newNum);
+  }
+  if (newNum.includes('undefined')) {
+    newNum = newNum.replace('undefined', '');
+  }
+  if (currentVal < 10 && equation == oldNum) {
     while (inputDiv.firstChild) {
       inputDiv.removeChild(inputDiv.lastChild);
     }
-    const textNode = document.createTextNode(`${currentValue}`);
+    
+    const textNode = document.createTextNode(`${currentVal}`);
     inputDiv.appendChild(textNode);
+    equation = '';
   }
 
-
-  if (symbols.some(symbol => symbol == currentValue)) {
-    
-    if (newSolved) {
-      symbol = this.value
-      console.log(oldValue);
-      console.log(newValue);
-      currentValue = parseInt(currentValue);
-      newSolved = newGuy[symbol](oldValue, oldSymbol);
-      console.log(newSolved);
-      
-      inputDiv.textContent = newSolved;
-      oldValue = newSolved;
+  if (symbols.some(symbol => symbol == currentVal)) {
+    if (solveFlag) {
+      newNum = parseInt(newNum);
+      equation = stringToNumber[operator](oldNum, newNum);
+      operator = this.value;
+      const textNode = document.createTextNode(`${equation}`);
+      inputDiv.appendChild(textNode);
+      oldNum = parseInt(equation);
     } else if (!isNaN(solved)) {
-      
-      inputDiv.textContent = solved;
-      oldValue = solved;
-      newSolved = true;
-      oldSymbol = this.value;
+      const textNode = document.createTextNode(`${solved}`);
+      inputDiv.appendChild(textNode);
+      oldNum = parseInt(solved);
+      solveFlag = true;
+      operator = this.value;
+      equation = oldNum;
     } 
+    newNum = '';
   } 
   
 }
 
-const newGuy = {
+const stringToNumber = {
   '+': function(x, y) { return x + y},
   '−': function(x, y) { return x - y},
   '×': function(x, y) { return x * y},
@@ -132,10 +139,7 @@ function makeEquation(arg) {
     if (isNaN(numCheck)) {
       let firstNum = parseInt(array[i-1]);
       let secondNum = parseInt(array[i+1]);
-      return newGuy[numCheck](firstNum, secondNum);
+      return stringToNumber[numCheck](firstNum, secondNum);
     };
   }
 }
-  // array.forEach((char) => {
-  //   console.log(char);
-  // })
