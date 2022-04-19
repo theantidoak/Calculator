@@ -5,7 +5,7 @@ let previousValue = '';
 let previousNum;
 let currentNum;
 let finale;
-const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')', '.'];
+const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')'];
 
 buttons.forEach(button => button.addEventListener('click', displayNumbers));
 buttons.forEach(button => button.addEventListener('click', operate));
@@ -16,7 +16,7 @@ function displayNumbers() {
 
   if (previousValue == '√') {
     if (currentValue < 10) return;
-    else if (symbols.some(symbol => symbol == currentValue)) {
+    else if (symbols.some(symbol => symbol == currentValue) || currentValue == '.') {
       const textNode = document.createTextNode(`${currentValue}` + ' ');
       oldInput.append(textNode);
     }
@@ -44,7 +44,7 @@ function displayNumbers() {
       inputDiv.removeChild(inputDiv.lastChild);
     }
   } else if (inputDiv.textContent.includes('(') || inputDiv.textContent.includes(')')) {
-    if (currentValue < 10 || symbols.some(symbol => symbol == currentValue)) {
+    if (currentValue < 10 || symbols.some(symbol => symbol == currentValue) || currentValue == '.') {
       inputDiv.appendChild(textNode);
     }
   } else if (currentValue < 10 || currentValue == '(' || currentValue == ')' || currentValue == '.' || currentValue == '^') {
@@ -59,7 +59,7 @@ function displayNumbers() {
     inputDiv.textContent[0] != '-' ? 
     inputDiv.textContent = `${currentValue}` + inputDiv.textContent :
     inputDiv.textContent = inputDiv.textContent.substring(1);
-  } else if (symbols.some(symbol => symbol == currentValue)) {
+  } else if (symbols.some(symbol => symbol == currentValue) || currentValue == '.') {
     if (symbols.includes(previousValue) || previousValue == '') return;
     const textNode = document.createTextNode(`${inputDiv.textContent}` + ' ' + `${currentValue}` + ' ');
     oldInput.append(textNode);
@@ -68,7 +68,7 @@ function displayNumbers() {
     }
   }
   previousValue = this.value;
-  previousNum = oldInput.textContent.replace(/\s*[^0-9]*\s*/, '');
+  previousNum = oldInput.textContent.replace(/(^-)\s*(^-)[^0-9]*\s*/, '');
   currentNum = inputDiv.textContent;
   if (symbols.some(symbol => symbol == currentValue)) {
     previousSymbol = currentValue;
@@ -76,25 +76,34 @@ function displayNumbers() {
 }
 
 let operator;
-let oldNum;
+let oldNum = 0;
 let newNum;
 let equation;
 let solveFlag = false;
 let solved;
 let currentVal;
+let oldValue;
 
 function operate() {
   currentVal = this.value;
+
   solved = makeEquation(previousNum);
   if (!isNaN(currentVal)) {
-    newNum += currentVal;
-    
-    console.log(newNum);
+    if (currentVal != '.') {
+      newNum += currentVal;
+    } 
+    if (oldValue == '.') {
+      newNum = newNum.toString().replace(currentVal, '') + '.' + currentVal;
+    }
+    if (newNum.includes('undefined')) {
+      newNum = newNum.replace('undefined', '');
+    }
   }
-  if (newNum.includes('undefined')) {
-    newNum = newNum.replace('undefined', '');
+  if (currentVal == '-') {
+    newNum = -newNum;
   }
   if (currentVal < 10 && equation == oldNum) {
+    
     while (inputDiv.firstChild) {
       inputDiv.removeChild(inputDiv.lastChild);
     }
@@ -106,23 +115,23 @@ function operate() {
 
   if (symbols.some(symbol => symbol == currentVal)) {
     if (solveFlag) {
-      newNum = parseInt(newNum);
+      newNum = parseFloat(newNum);
       equation = stringToNumber[operator](oldNum, newNum);
       operator = this.value;
       const textNode = document.createTextNode(`${equation}`);
       inputDiv.appendChild(textNode);
-      oldNum = parseInt(equation);
+      oldNum = parseFloat(equation);
     } else if (!isNaN(solved)) {
       const textNode = document.createTextNode(`${solved}`);
       inputDiv.appendChild(textNode);
-      oldNum = parseInt(solved);
+      oldNum = parseFloat(solved);
       solveFlag = true;
       operator = this.value;
       equation = oldNum;
     } 
-    newNum = '';
+    newNum = 0;
   } 
-  
+  oldValue = this.value; 
 }
 
 const stringToNumber = {
@@ -137,8 +146,8 @@ function makeEquation(arg) {
   for (let i = 0; i < array.length; i++) {
     let numCheck = array[i];
     if (isNaN(numCheck)) {
-      let firstNum = parseInt(array[i-1]);
-      let secondNum = parseInt(array[i+1]);
+      let firstNum = parseFloat(array[i-1]);
+      let secondNum = parseFloat(array[i+1]);
       return stringToNumber[numCheck](firstNum, secondNum);
     };
   }
