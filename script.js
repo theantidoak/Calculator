@@ -6,7 +6,7 @@ let previousNum;
 let currentNum;
 let finale;
 const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')'];
-const operatorz = ['√', '^', '÷', '×', '−', '+'];
+const operatorz = ['^', '÷', '×', '−', '+'];
 
 // buttons.forEach(button => button.addEventListener('click', displayNumbers));
 // buttons.forEach(button => button.addEventListener('click', operate));
@@ -166,7 +166,6 @@ start();
 
 function createFirstNum() {
   const currentValue = this.value;
-  console.log(currentValue)
   
   if (currentValue == 'clear') {
     start();
@@ -188,14 +187,29 @@ function createFirstNum() {
       inputDiv.textContent = numArray.join('');
     }
     operatorFlag = false;
-  } else if (!flag && currentValue == '-') {
+  } 
+  
+  if (!flag && currentValue == '-') {
     if (numArray[0] == '-') {
       numArray.shift();
     } else {
       numArray.unshift(currentValue);
     }
     inputDiv.textContent = numArray.join('');
-  } else if (!flag && currentValue == "=") {
+  // } else if (flag && currentValue == '-') {
+  //   if (numArray[0] == '-') {
+  //     numArray = [previousNumString];
+  //     console.log(numArray);
+  //     numArray.shift();
+  //     inputDiv.textContent = numArray.join(' ');
+  //   } else {
+  //     numArray = [previousNumString];
+  //     numArray.unshift(currentValue);
+  //     inputDiv.textContent = numArray.join(' ');
+  //   }
+  }
+
+  if (!flag && currentValue == "=") {
     num = parseFloat(numArray.join(''));
     previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
     previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
@@ -211,22 +225,27 @@ function createFirstNum() {
     flag = true;
   }
 
+  if (currentValue == '√' && !flag) {
+    previousNumString = parseFloat(numArray.join(''));
+    previousInput = previousNumString;
+    num = 1;
+    previousNumString = parseFloat(stringToNumber[currentValue](previousNumString, num));
+    previousInput = document.createTextNode(`${currentValue}` + ' ' + `${previousInput}` + ' ');
+    oldInput.append(previousInput);
+    inputDiv.textContent = previousNumString;
+    flag = true;
+    return;
+  } else if (currentValue == '√' && flag) {
+    num = 1;
+    previousInput = previousNumString;
+    previousNumString = parseFloat(stringToNumber[currentValue](previousNumString, num));
+    previousInput = document.createTextNode(`${currentValue}` + `${previousInput}` + ' ');
+    oldInput.append(previousInput);
+    inputDiv.textContent = previousNumString;
+  }
+
   if (operatorz.some(op => op == currentValue)) {
     if (operatorFlag) return;
-
-    if (currentValue == '√' && !flag) {
-      if (currentValue == operatorr) return;
-      
-      previousNumString = parseFloat(numArray.join(''));
-      previousInput = previousNumString;
-      num = 1;
-      previousNumString = parseFloat(stringToNumber[currentValue](previousNumString, num));
-      previousInput = document.createTextNode(`${currentValue}` + ' ' + `${previousInput}` + ' ');
-      oldInput.append(previousInput);
-      inputDiv.textContent = previousNumString;
-      flag = true;
-      return;
-    }
 
     if (previousNumString == undefined) {
       previousNumString = parseFloat(numArray.join(''));
