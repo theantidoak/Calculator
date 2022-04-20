@@ -153,6 +153,8 @@ const stringToNumber = {
   '−': function(x, y) { return x - y},
   '×': function(x, y) { return x * y},
   '÷': function(x, y) { return x / y},
+  '^': function(x, y) { return x ** y},
+  '√': function(x, y) { return Math.sqrt(x) * y },
 };
 
 let numArray = [];
@@ -211,21 +213,42 @@ function createFirstNum() {
 
   if (operatorz.some(op => op == currentValue)) {
     if (operatorFlag) return;
+
+    if (currentValue == '√' && !flag) {
+      if (currentValue == operatorr) return;
+      
+      previousNumString = parseFloat(numArray.join(''));
+      previousInput = previousNumString;
+      num = 1;
+      previousNumString = parseFloat(stringToNumber[currentValue](previousNumString, num));
+      previousInput = document.createTextNode(`${currentValue}` + ' ' + `${previousInput}` + ' ');
+      oldInput.append(previousInput);
+      inputDiv.textContent = previousNumString;
+      flag = true;
+      return;
+    }
+
     if (previousNumString == undefined) {
       previousNumString = parseFloat(numArray.join(''));
       num = previousNumString;
-    } else {
+    } else if (!flag) {
       num = parseFloat(numArray.join(''));
       previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
     }
     if (flag) {
-      previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
-      oldInput.append(previousInput);
+      if (num == 1) {
+        previousInput = document.createTextNode(`${currentValue}` + ' ');
+        oldInput.append(previousInput);
+      } else {
+        previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
+        oldInput.append(previousInput);
+      }
       flag = false;
     } else {
       previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
       oldInput.append(previousInput);
     }
+    
     if (isNaN(previousNumString)) {
       start();
       inputDiv.textContent = 'Error';
