@@ -1,6 +1,6 @@
 .calculator {
   background-color: blue;
-  width: 30vw;
+  width: 25vw;
   height: 90vh;
   display: grid;
   grid-template-rows: 1.25fr 3fr;

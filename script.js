@@ -164,7 +164,17 @@ start();
 
 function createFirstNum() {
   const currentValue = this.value;
+  console.log(currentValue)
   
+  if (currentValue == 'clear') {
+    start();
+  }
+
+  if (currentValue == 'delete') {
+    numArray.pop();
+    inputDiv.textContent = numArray.join('');
+  }
+
   if (currentValue < 10 || currentValue == '(' || currentValue == ')' 
   || currentValue == '.' || currentValue == '^') {
     if (flag) {
@@ -183,20 +193,24 @@ function createFirstNum() {
       numArray.unshift(currentValue);
     }
     inputDiv.textContent = numArray.join('');
-    operatorFlag = false;
   } else if (!flag && currentValue == "=") {
     num = parseFloat(numArray.join(''));
     previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
     previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
     oldInput.append(previousInput);
-    inputDiv.textContent = previousNumString;
+    if (isNaN(previousNumString) || previousNumString == Infinity) {
+      start();
+      inputDiv.textContent = 'Error';
+      previousNumString == undefined;
+    } else {
+      inputDiv.textContent = previousNumString;
+    }
     numArray = [0];
     flag = true;
-    operatorFlag = false;
   }
 
   if (operatorz.some(op => op == currentValue)) {
-    if (operatorFlag || flag) return;
+    if (operatorFlag) return;
     if (previousNumString == undefined) {
       previousNumString = parseFloat(numArray.join(''));
       num = previousNumString;
@@ -212,11 +226,19 @@ function createFirstNum() {
       previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
       oldInput.append(previousInput);
     }
-    inputDiv.textContent = previousNumString;
+    if (isNaN(previousNumString)) {
+      start();
+      inputDiv.textContent = 'Error';
+    } else if (previousNumString == Infinity) {
+      start();
+      previousNumString = 0;
+      inputDiv.textContent = previousNumString;
+    } else {
+      inputDiv.textContent = previousNumString;
+    }
     numArray = [];
     operatorr = currentValue;
     operatorFlag = true;
-    flag = false;
   }
 
   return previousNumString;
