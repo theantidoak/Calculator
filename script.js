@@ -162,69 +162,24 @@ let previousNumString;
 let operatorr;
 let flag = false;
 let operatorFlag = false;
+let currentValue;
 start();
 
 function createFirstNum() {
-  const currentValue = this.value;
+  currentValue = this.value;
   
+  // Clear Button
   if (currentValue == 'clear') {
     start();
   }
 
+  // Delete Button
   if (currentValue == 'delete') {
     numArray.pop();
     inputDiv.textContent = numArray.join('');
   }
 
-  if (currentValue < 10 || currentValue == '(' || currentValue == ')' 
-  || currentValue == '.' || currentValue == '^') {
-    if (flag) {
-      start()
-      numArray.push(currentValue);
-      inputDiv.textContent = numArray.join('');
-    } else {
-      numArray.push(currentValue);
-      inputDiv.textContent = numArray.join('');
-    }
-    operatorFlag = false;
-  } 
-  
-  if (!flag && currentValue == '-') {
-    if (numArray[0] == '-') {
-      numArray.shift();
-    } else {
-      numArray.unshift(currentValue);
-    }
-    inputDiv.textContent = numArray.join('');
-  // } else if (flag && currentValue == '-') {
-  //   if (numArray[0] == '-') {
-  //     numArray = [previousNumString];
-  //     console.log(numArray);
-  //     numArray.shift();
-  //     inputDiv.textContent = numArray.join(' ');
-  //   } else {
-  //     numArray = [previousNumString];
-  //     numArray.unshift(currentValue);
-  //     inputDiv.textContent = numArray.join(' ');
-  //   }
-  }
-
-  if (!flag && currentValue == "=") {
-    num = parseFloat(numArray.join(''));
-    previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
-    previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
-    oldInput.append(previousInput);
-    if (isNaN(previousNumString) || previousNumString == Infinity) {
-      start();
-      inputDiv.textContent = 'Error';
-      previousNumString == undefined;
-    } else {
-      inputDiv.textContent = previousNumString;
-    }
-    numArray = [0];
-    flag = true;
-  }
-
+  // Square Root
   if (currentValue == '√' && !flag) {
     previousNumString = parseFloat(numArray.join(''));
     previousInput = previousNumString;
@@ -244,9 +199,66 @@ function createFirstNum() {
     inputDiv.textContent = previousNumString;
   }
 
+
+  // Making it negative
+  if (!flag && currentValue == '-') {
+    if (numArray[0] == '-') {
+      numArray.shift();
+    } else {
+      numArray.unshift(currentValue);
+    }
+    inputDiv.textContent = numArray.join('');
+  } else if (flag && currentValue == '-') {
+    numArray = [previousNumString];
+    if (numArray[0] == '-' || previousNumString < 0) {
+      numArray = numArray * -1;
+      previousNumString = previousNumString * -1;
+      inputDiv.textContent = numArray;
+    } else {
+      numArray.unshift(currentValue);
+      previousNumString = -previousNumString;
+      inputDiv.textContent = numArray.join('');
+    }
+  }
+
+  
+  // Equals 
+  if (!flag && currentValue == "=") {
+    num = parseFloat(numArray.join(''));
+    previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
+    previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
+    oldInput.append(previousInput);
+    if (isNaN(previousNumString) || previousNumString == Infinity) {
+      start();
+      inputDiv.textContent = 'Error';
+      previousNumString == undefined;
+    } else {
+      inputDiv.textContent = previousNumString;
+    }
+    numArray = [0];
+    flag = true;
+  }
+
+
+  // Creating the inputDiv array
+  if (currentValue < 10 || currentValue == '(' || currentValue == ')' || currentValue == '^') {
+    if (flag) {
+      start()
+      numArray.push(currentValue);
+      inputDiv.textContent = numArray.join('');
+    } else {
+      numArray.push(currentValue);
+      inputDiv.textContent = numArray.join('');
+    }
+    operatorFlag = false;
+  } 
+
+
+  // Operators
   if (operatorz.some(op => op == currentValue)) {
     if (operatorFlag) return;
 
+    // Equation
     if (previousNumString == undefined) {
       previousNumString = parseFloat(numArray.join(''));
       num = previousNumString;
@@ -254,6 +266,8 @@ function createFirstNum() {
       num = parseFloat(numArray.join(''));
       previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
     }
+
+    // oldInput Text
     if (flag) {
       if (num == 1) {
         previousInput = document.createTextNode(`${currentValue}` + ' ');
@@ -268,6 +282,7 @@ function createFirstNum() {
       oldInput.append(previousInput);
     }
     
+    // inputDiv Text
     if (isNaN(previousNumString)) {
       start();
       inputDiv.textContent = 'Error';
@@ -278,6 +293,7 @@ function createFirstNum() {
     } else {
       inputDiv.textContent = previousNumString;
     }
+
     numArray = [];
     operatorr = currentValue;
     operatorFlag = true;
