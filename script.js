@@ -189,9 +189,13 @@ function createFirstNum() {
 
   // Squaring
   if (equalFlag && currentValue == '^') {
-    console.log('3');
+    previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
+    oldInput.append(previousInput);
+    inputDiv.textContent = previousNumString + currentValue;
+    equalFlag = false;
+    numArray = [previousNumString, currentValue];
+    operator = '^';
   } else if (currentValue == '^') {
-    console.log('1');
     previousNumString = parseFloat(inputDiv.textContent);
     previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
     oldInput.append(previousInput);
@@ -199,10 +203,10 @@ function createFirstNum() {
     numArray.push(currentValue);
     inputDiv.textContent = numArray.join('');
   } else if (operator == '^' && currentValue == '=') {
-    console.log('2');
+    console.log('hello');
     num = parseFloat(numArray.pop());
     previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
-    previousInput = document.createTextNode(`${num}` + ' ' + '=' + ' ' + `${previousNumString}`);
+    previousInput = document.createTextNode(`${num}` + ' ' + '=' + ' ' + `${previousNumString}` + ' ' + '=' + ' ');
     oldInput.append(previousInput);
     inputDiv.textContent = previousNumString;
     equalFlag = true;
