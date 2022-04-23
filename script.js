@@ -168,7 +168,7 @@ const stringToNumber = {
 let numArray = [];
 let previousNumString;
 let operator;
-let equalflag = false;
+let equalFlag = false;
 let operatorFlag = false;
 let currentValue;
 start();
@@ -188,7 +188,10 @@ function createFirstNum() {
   }
 
   // Squaring
-  if (currentValue == '^') {
+  if (equalFlag && currentValue == '^') {
+    console.log('3');
+  } else if (currentValue == '^') {
+    console.log('1');
     previousNumString = parseFloat(inputDiv.textContent);
     previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
     oldInput.append(previousInput);
@@ -196,9 +199,13 @@ function createFirstNum() {
     numArray.push(currentValue);
     inputDiv.textContent = numArray.join('');
   } else if (operator == '^' && currentValue == '=') {
-    console.log(numArray);
+    console.log('2');
     num = parseFloat(numArray.pop());
     previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
+    previousInput = document.createTextNode(`${num}` + ' ' + '=' + ' ' + `${previousNumString}`);
+    oldInput.append(previousInput);
+    inputDiv.textContent = previousNumString;
+    equalFlag = true;
   }
 
   // Square Root
