@@ -1,11 +1,11 @@
 const inputDiv = document.querySelector('#input-div');
 const oldInput = document.querySelector('#old-inputs');
 const buttons = document.querySelectorAll('button');
-let previousValue = '';
-let previousNum;
-let currentNum;
-let finale;
-const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')'];
+// let previousValue = '';
+// let previousNum;
+// let currentNum;
+// let finale;
+// const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')'];
 const operators = ['÷', '×', '−', '+'];
 
 // buttons.forEach(button => button.addEventListener('click', displayNumbers));
@@ -195,8 +195,10 @@ function createFirstNum() {
     operator = currentValue;
     numArray.push(currentValue);
     inputDiv.textContent = numArray.join('');
-  } else if (operator == '^' && currentValue != '=') {
-    num = parseFloat(numArray.join(''));
+  } else if (operator == '^' && currentValue == '=') {
+    console.log(numArray);
+    num = parseFloat(numArray.pop());
+    previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
   }
 
   // Square Root
@@ -243,7 +245,7 @@ function createFirstNum() {
 
   
   // Equals 
-  if (!equalFlag && currentValue == "=") {
+  if (!equalFlag && currentValue == "=" && operator != '^') {
     num = parseFloat(numArray.join(''));
     previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
     previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
