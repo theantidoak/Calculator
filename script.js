@@ -6,7 +6,7 @@ let previousNum;
 let currentNum;
 let finale;
 const symbols = ['√', '^', '÷', '×', '−', '+', '(', ')'];
-const operatorz = ['^', '÷', '×', '−', '+'];
+const operators = ['÷', '×', '−', '+'];
 
 // buttons.forEach(button => button.addEventListener('click', displayNumbers));
 // buttons.forEach(button => button.addEventListener('click', operate));
@@ -155,12 +155,20 @@ const stringToNumber = {
   '÷': function(x, y) { return x / y},
   '^': function(x, y) { return x ** y},
   '√': function(x, y) { return Math.sqrt(x) * y },
+  '!': function(x, y) {
+    const output = [1, 1];
+    if (x < 0) return "OOPS";
+    for (let i = 2; i < x; i++) {
+        output.push((output[i-2] + output[i-1])); 
+    }
+    return output[x - 1] + y;
+  }
 };
 
 let numArray = [];
 let previousNumString;
-let operatorr;
-let flag = false;
+let operator;
+let equalflag = false;
 let operatorFlag = false;
 let currentValue;
 start();
@@ -179,8 +187,20 @@ function createFirstNum() {
     inputDiv.textContent = numArray.join('');
   }
 
+  // Squaring
+  if (currentValue == '^') {
+    previousNumString = parseFloat(inputDiv.textContent);
+    previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
+    oldInput.append(previousInput);
+    operator = currentValue;
+    numArray.push(currentValue);
+    inputDiv.textContent = numArray.join('');
+  } else if (operator == '^' && currentValue != '=') {
+    num = parseFloat(numArray.join(''));
+  }
+
   // Square Root
-  if (currentValue == '√' && !flag) {
+  if (currentValue == '√' && !equalFlag) {
     previousNumString = parseFloat(numArray.join(''));
     previousInput = previousNumString;
     num = 1;
@@ -188,9 +208,9 @@ function createFirstNum() {
     previousInput = document.createTextNode(`${currentValue}` + ' ' + `${previousInput}` + ' ');
     oldInput.append(previousInput);
     inputDiv.textContent = previousNumString;
-    flag = true;
+    equalFlag = true;
     return;
-  } else if (currentValue == '√' && flag) {
+  } else if (currentValue == '√' && equalFlag) {
     num = 1;
     previousInput = previousNumString;
     previousNumString = parseFloat(stringToNumber[currentValue](previousNumString, num));
@@ -201,14 +221,14 @@ function createFirstNum() {
 
 
   // Making it negative
-  if (!flag && currentValue == '-') {
+  if (!equalFlag && currentValue == '-') {
     if (numArray[0] == '-') {
       numArray.shift();
     } else {
       numArray.unshift(currentValue);
     }
     inputDiv.textContent = numArray.join('');
-  } else if (flag && currentValue == '-') {
+  } else if (equalFlag && currentValue == '-') {
     numArray = [previousNumString];
     if (numArray[0] == '-' || previousNumString < 0) {
       numArray = numArray * -1;
@@ -223,9 +243,9 @@ function createFirstNum() {
 
   
   // Equals 
-  if (!flag && currentValue == "=") {
+  if (!equalFlag && currentValue == "=") {
     num = parseFloat(numArray.join(''));
-    previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
+    previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
     previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
     oldInput.append(previousInput);
     if (isNaN(previousNumString) || previousNumString == Infinity) {
@@ -236,13 +256,13 @@ function createFirstNum() {
       inputDiv.textContent = previousNumString;
     }
     numArray = [0];
-    flag = true;
+    equalFlag = true;
   }
 
 
   // Creating the inputDiv array
-  if (currentValue < 10 || currentValue == '(' || currentValue == ')' || currentValue == '^') {
-    if (flag) {
+  if (currentValue < 10 || currentValue == '(' || currentValue == ')') {
+    if (equalFlag) {
       start()
       numArray.push(currentValue);
       inputDiv.textContent = numArray.join('');
@@ -255,20 +275,20 @@ function createFirstNum() {
 
 
   // Operators
-  if (operatorz.some(op => op == currentValue)) {
+  if (operators.some(op => op == currentValue)) {
     if (operatorFlag) return;
 
     // Equation
     if (previousNumString == undefined) {
       previousNumString = parseFloat(numArray.join(''));
       num = previousNumString;
-    } else if (!flag) {
+    } else if (!equalFlag) {
       num = parseFloat(numArray.join(''));
-      previousNumString = parseFloat(stringToNumber[operatorr](previousNumString, num));
-    }
+      previousNumString = parseFloat(stringToNumber[operator](previousNumString, num));
+    } 
 
     // oldInput Text
-    if (flag) {
+    if (equalFlag) {
       if (num == 1) {
         previousInput = document.createTextNode(`${currentValue}` + ' ');
         oldInput.append(previousInput);
@@ -276,7 +296,7 @@ function createFirstNum() {
         previousInput = document.createTextNode(`${previousNumString}` + ' ' + `${currentValue}` + ' ');
         oldInput.append(previousInput);
       }
-      flag = false;
+      equalFlag = false;
     } else {
       previousInput = document.createTextNode(`${num}` + ' ' + `${currentValue}` + ' ');
       oldInput.append(previousInput);
@@ -295,7 +315,7 @@ function createFirstNum() {
     }
 
     numArray = [];
-    operatorr = currentValue;
+    operator = currentValue;
     operatorFlag = true;
   }
 
@@ -306,9 +326,9 @@ function createFirstNum() {
 function start() {
   inputDiv.textContent = '';
   oldInput.textContent = '';
-  operatorr = undefined;
+  operator = undefined;
   numArray = [];
   previousNumString = undefined;
-  flag = false;
+  equalFlag = false;
   operatorFlag = false;
 }
