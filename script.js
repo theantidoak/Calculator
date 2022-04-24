@@ -3,36 +3,7 @@ const oldInput = document.querySelector("#old-inputs");
 const buttons = document.querySelectorAll("button");
 const operators = ["÷", "×", "−", "+"];
 
-buttons.forEach((button) => button.addEventListener("click", createFirstNum));
-
-const stringToNumber = {
-  "+": function (x, y) {
-    return x + y;
-  },
-  "−": function (x, y) {
-    return x - y;
-  },
-  "×": function (x, y) {
-    return x * y;
-  },
-  "÷": function (x, y) {
-    return x / y;
-  },
-  "^": function (x, y) {
-    return x ** y;
-  },
-  "√": function (x, y) {
-    return Math.sqrt(x) * y;
-  },
-  "!": function (x, y) {
-    const output = [1, 1];
-    if (x < 0) return "OOPS";
-    for (let i = 2; i < x; i++) {
-      output.push(output[i - 2] + output[i - 1]);
-    }
-    return output[x - 1] + y;
-  }
-};
+buttons.forEach((button) => button.addEventListener("click", calculate));
 
 let numArray = [];
 let answer;
@@ -41,11 +12,11 @@ let equalFlag = false;
 let operatorFlag = false;
 let currentValue;
 
-function createFirstNum() {
+function calculate() {
   currentValue = this.value;
 
-  if (currentValue == "clear") {
-    start();
+  if (currentValue == "clear" || operator == 'Fn') {
+    clearAll();
   }
 
   if (currentValue == "^" && !operatorFlag 
@@ -57,6 +28,14 @@ function createFirstNum() {
     findSquareRoot();
   }
   
+  if (currentValue == "Fn" && !operatorFlag) {
+    fibonacci();
+  }
+
+  if (currentValue == '!' && !operatorFlag) {
+    factorial();
+  }
+
   if (currentValue == "delete") {
     numArray.pop();
     newInput.textContent = numArray.join("");
@@ -79,7 +58,7 @@ function createFirstNum() {
   }
 }
 
-function start() {
+function clearAll() {
   newInput.textContent = "";
   oldInput.textContent = "";
   operator = undefined;
@@ -89,12 +68,48 @@ function start() {
   operatorFlag = false;
 }
 
-// Clear Button
-function clearAll() {
-  if (currentValue == "clear") {
-    start();
-  }
-}
+const stringToNumber = {
+  "+": function (x, y) {
+    return x + y;
+  },
+  "−": function (x, y) {
+    return x - y;
+  },
+  "×": function (x, y) {
+    return x * y;
+  },
+  "÷": function (x, y) {
+    return x / y;
+  },
+  "^": function (x, y) {
+    return x ** y;
+  },
+  "√": function (x, y) {
+    return Math.sqrt(x) * y;
+  },
+  "Fn": function (x, y) {
+    const output = [1, 1];
+    if (x < 0) return "OOPS";
+    for (let i = 2; i < x; i++) {
+      output.push(output[i - 2] + output[i - 1]);
+      y = 0;
+    }
+    return output;
+  },
+  "!": function (x, y) {
+    const factArray = [];
+    y = 0;
+    while (x > 0) {
+      factArray.unshift(x);
+      x--;
+    };
+    while (x < 0) {
+      factArray.unshift(x);
+      x++;
+    };
+    return factArray.reduce((start, next) => next == 0 ? 1 : start*next, 1);
+  },
+};
 
 // Square the number
 function square() {
@@ -133,14 +148,12 @@ function square() {
 function findSquareRoot() {
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
-    oldInputTextNode = answer;
     num = 1;
+    oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
-    oldInputTextNode = document.createTextNode(
-      `${currentValue}` + " " + `${oldInputTextNode}` + " " + "=" + " " + 
+    oldInputTextNode = document.createTextNode(`${currentValue}` + " " + 
+      `${oldInputTextNode}` + " " + "=" + " " + 
       `${answer}` + " " + "=" + " ");
-    oldInput.appendChild(oldInputTextNode);
-    newInput.textContent = answer;
     equalFlag = true;
   } else if (equalFlag) {
     num = 1;
@@ -149,21 +162,54 @@ function findSquareRoot() {
     oldInputTextNode = document.createTextNode(
       `${currentValue}` + `${oldInputTextNode}` + " " + "=" + " " +
       `${answer}` + " " + "=" + " ");
-    oldInput.appendChild(oldInputTextNode);
-    newInput.textContent = answer;
   }
+  oldInput.appendChild(oldInputTextNode);
+  newInput.textContent = answer;
+}
+
+// Calculate fibonacci sequence
+function fibonacci() {
+  if (!equalFlag) {
+    answer = parseFloat(numArray.join(""));
+  } 
+  num = 0;
+  oldInputTextNode = answer;
+  answer = stringToNumber[currentValue](answer, num).join(' ');
+  oldInputTextNode = document.createTextNode(
+    `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " ");
+  oldInput.appendChild(oldInputTextNode);
+  newInput.textContent = answer;
+  operator = 'Fn';
+}
+
+// Calculate Factorial
+function factorial() {
+  if (!equalFlag) {
+    answer = parseFloat(numArray.join(""));
+    num = 0;
+    oldInputTextNode = answer;
+    answer = parseFloat(stringToNumber[currentValue](answer, num));
+    oldInputTextNode = document.createTextNode(
+      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " ");
+    equalFlag = true;
+  } else if (equalFlag) {
+    num = 0;
+    oldInputTextNode = answer;
+    answer = parseFloat(stringToNumber[currentValue](answer, num));
+    oldInputTextNode = document.createTextNode(
+      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " ");
+  }
+  oldInput.appendChild(oldInputTextNode);
+  newInput.textContent = answer;
 }
 
 // Create a Number and/or decimal
 function makeNumber() {
   if (equalFlag) {
-    start();
-    numArray.push(currentValue);
-    newInput.textContent = numArray.join("");
-  } else {
-    numArray.push(currentValue);
-    newInput.textContent = numArray.join("");
+    clearAll();
   }
+  numArray.push(currentValue);
+  newInput.textContent = numArray.join("");
   operatorFlag = false;
 }
 
@@ -199,9 +245,8 @@ function equate() {
   );
   oldInput.appendChild(oldInputTextNode);
   if (isNaN(answer) || answer == Infinity) {
-    start();
+    clearAll();
     newInput.textContent = "Error";
-    answer == undefined;
   } else {
     newInput.textContent = answer;
   }
@@ -244,10 +289,10 @@ function operate() {
 
   // newInput Text
   if (isNaN(answer)) {
-    start();
+    clearAll();
     newInput.textContent = "Error";
   } else if (answer == Infinity) {
-    start();
+    clearAll();
     answer = 0;
     newInput.textContent = answer;
   } else {
