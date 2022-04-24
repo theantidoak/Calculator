@@ -1,60 +1,61 @@
-<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Calculator</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-  </head>
-  <body>
-    <div class="container">
-      <div class="calculator">
-        <div id="display">
-          <div id="old-inputs"></div>
-          <div id="input-div">
-          </div>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="calculator">
+      <div id="display">
+        <div id="old-inputs"></div>
+        <div id="input-div">
         </div>
-        <div class="all-buttons">
-          <div class="top-row">
-            <button class="clear" value="clear">A/C</button>
-            <button class="squared" value="^">x^</button>
-            <button class="root" value="√">√</button>
-            <button class="open-parenthesis" value="(">(</button>
-            <button class="close-parenthesis" value=")">)</button>
-            <button class="delete" value="delete">Del</button>
+      </div>
+      <div class="all-buttons">
+        <div class="top-row">
+          <button class="clear" value="clear">A/C</button>
+          <button class="squared" value="^">x^</button>
+          <button class="root" value="√">√</button>
+          <button class="open-parenthesis" value="(">(</button>
+          <button class="close-parenthesis" value=")">)</button>
+          <button class="delete" value="delete">Del</button>
+        </div>
+        <div class="bottom-row">
+          <div class="numbers">
+            <div class="left">
+              <button class="seven" value="7">7</button>
+              <button class="four" value="4">4</button>
+              <button class="one" value="1">1</button>
+              <button class="zero" value="0">0</button>
+            </div>
+            <div class="middle">
+              <button class="eight" value="8">8</button>
+              <button class="five" value="5">5</button>
+              <button class="two" value="2">2</button>
+              <button class="decimal" value=".">.</button>
+            </div>
+            <div class="right">
+              <button class="nine" value="9">9</button>
+              <button class="six" value="6">6</button>
+              <button class="three" value="3">3</button>
+              <button class="negative" value="-">±</button>
+            </div>
           </div>
-          <div class="bottom-row">
-            <div class="numbers">
-              <div class="left">
-                <button class="seven" value="7">7</button>
-                <button class="four" value="4">4</button>
-                <button class="one" value="1">1</button>
-                <button class="zero" value="0">0</button>
-              </div>
-              <div class="middle">
-                <button class="eight" value="8">8</button>
-                <button class="five" value="5">5</button>
-                <button class="two" value="2">2</button>
-                <button class="decimal" value=".">.</button>
-              </div>
-              <div class="right">
-                <button class="nine" value="9">9</button>
-                <button class="six" value="6">6</button>
-                <button class="three" value="3">3</button>
-                <button class="negative" value="-">±</button>
-              </div>
-            </div>
-            <div class="side-column">
-              <button class="divide" value="÷">÷</button>
-              <button class="multiply" value="×">×</button>
-              <button class="subtract" value="−">−</button>
-              <button class="add" value="+">+</button>
-              <button class="equals" value="=">=</button>
-            </div>
+          <div class="side-column">
+            <button class="divide" value="÷">÷</button>
+            <button class="multiply" value="×">×</button>
+            <button class="subtract" value="−">−</button>
+            <button class="add" value="+">+</button>
+            <button class="equals" value="=">=</button>
           </div>
         </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
 </html>
