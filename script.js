@@ -2,22 +2,52 @@ const newInput = document.querySelector("#input-div");
 const oldInput = document.querySelector("#old-inputs");
 const buttons = document.querySelectorAll("button");
 const operators = ["÷", "×", "−", "+"];
+const numbers = document.querySelectorAll('[data-key]');
+const add = document.querySelector('.add');
+
+let currentValue;
 
 buttons.forEach((button) => button.addEventListener("click", calculate));
+window.addEventListener('keydown', calculate);
 
 let numArray = [];
 let answer;
 let operator;
 let equalFlag = false;
 let operatorFlag = false;
-let currentValue;
 let bracketFlag = false;
 let bracketValue;
 let oldNumber;
 let oldOperator;
 
-function calculate() {
-  currentValue = this.value;
+
+function calculate(e) {
+  console.log(e.keyCode);
+  if (e.keyCode && [...numbers].some(number => number.dataset.key == e.keyCode)) {
+    if (e.shiftKey) {
+      if (e.keyCode == 49) {
+        currentValue = '!';
+      } else if (e.keyCode == 53) {
+        currentValue = 'Fn';
+      } else if (e.keyCode == 54) {
+        currentValue = '^';
+      } else if (e.keyCode == 55) {
+        currentValue = '√';
+      } else if (e.keyCode == 56) {
+        currentValue = '*';
+      } else if (e.keyCode == 57) {
+        currentValue = '(';
+      } else if (e.keyCode == 48) {
+        currentValue = ')';
+      }
+    } else {
+      currentValue = [...numbers].filter(number => number.dataset.key == e.keyCode)[0].value;
+    }
+  } else {
+    currentValue = this.value;
+  }
+
+  console.log(currentValue);
 
   if (currentValue < 10 || currentValue == '.') {
     makeNumber();
@@ -237,6 +267,7 @@ function factorial() {
 
 // Create a Number and/or decimal
 function makeNumber() {
+  if (numArray.includes('.') & currentValue == '.') return;
   if (equalFlag) {
     clearAll();
   }

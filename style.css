@@ -91,3 +91,7 @@ button {
   border-radius: 10px;
   font-size: 1.3vw;
 }
+
+.root > *, .fibonacci > * {
+  font-size: .5rem;
+}
