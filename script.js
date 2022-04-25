@@ -11,17 +11,35 @@ let operator;
 let equalFlag = false;
 let operatorFlag = false;
 let currentValue;
+let bracketFlag = false;
+let bracketValue;
+let oldNumber;
+let oldOperator;
 
 function calculate() {
   currentValue = this.value;
+
+  if (currentValue < 10 || currentValue == '.') {
+    makeNumber();
+  }
+
+  if (currentValue == '(' || currentValue == ')') {
+    useParenthesis();
+  }
+
+  if (currentValue == "-") {
+    toggleNegative();
+  }
 
   if (currentValue == "clear" || operator == 'Fn') {
     clearAll();
   }
 
+  if (numArray.length == 0) return;
+
   if (currentValue == "^" && !operatorFlag 
     || (operator == "^" && currentValue == "=")) {
-    square();
+      square();
   }
 
   if (currentValue == "√" && !operatorFlag) {
@@ -41,20 +59,27 @@ function calculate() {
     newInput.textContent = numArray.join("");
   }
 
-  if (currentValue < 10 || currentValue == '.') {
-    makeNumber();
-  }
-
-  if (currentValue == "-") {
-    toggleNegative();
-  }
-
-  if (!equalFlag && currentValue == "=" && operator != "^" && !operatorFlag) {
+  if (!equalFlag && currentValue == "=" && operator != "^" && !operatorFlag && !bracketFlag) {
     equate();
   }
 
   if (operators.some((op) => op == currentValue)) {
     operate();
+  }
+}
+
+// Brackets
+function useParenthesis() {
+  if (equalFlag) {
+    clearAll();
+  }
+  numArray.push(currentValue);
+  newInput.textContent = numArray.join("");
+  bracketFlag = !bracketFlag;
+  if (currentValue == ')') {
+    bracketValue = ')';
+  } else {
+    oldOperator = operator;
   }
 }
 
@@ -88,11 +113,14 @@ const stringToNumber = {
     return Math.sqrt(x) * y;
   },
   "Fn": function (x, y) {
-    const output = [1, 1];
+    let output = [1, 1];
+    y = 0;
     if (x < 0) return "OOPS";
     for (let i = 2; i < x; i++) {
       output.push(output[i - 2] + output[i - 1]);
-      y = 0;
+    }
+    if (x == 0) {
+      output = [1];
     }
     return output;
   },
@@ -238,6 +266,20 @@ function toggleNegative() {
 
 // Use equal sign
 function equate() {
+  if (bracketValue == ')') {
+    answer = parseFloat(numArray[1]);
+    operator = numArray[2];
+    num = parseFloat(numArray[3]);
+    answer = parseFloat(stringToNumber[operator](answer, num));
+    num = answer;
+    answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+    newInput.textContent = answer;
+    numArray = [0];
+    equalFlag = true;
+    bracketValue = 'oldInput';
+    bracketFlag = false;
+    return;
+  }
   num = parseFloat(numArray.join(""));
   answer = parseFloat(stringToNumber[operator](answer, num));
   oldInputTextNode = document.createTextNode(
@@ -258,7 +300,10 @@ function equate() {
 // Use the operators
 function operate() {
   // Equation
-  if (answer == undefined) {
+  if (bracketFlag) {
+    answer = numArray.join("");
+    
+  } else if (answer == undefined) {
     answer = parseFloat(numArray.join(""));
     num = answer;
   } else if (!equalFlag) {
@@ -275,20 +320,27 @@ function operate() {
     if (num == 1) {
       oldInputTextNode = document.createTextNode(`${currentValue}` + " ");
       oldInput.appendChild(oldInputTextNode);
+    } else if (bracketValue == 'oldInput') {
+      oldInputTextNode = document.createTextNode(
+        `${num}` + " " + '=' + ' ' + `${answer}` + " " + `${currentValue}` + " ");
+      oldInput.appendChild(oldInputTextNode);
     } else {
       oldInputTextNode = document.createTextNode(
         `${answer}` + " " + `${currentValue}` + " ");
       oldInput.appendChild(oldInputTextNode);
     }
     equalFlag = false;
-  } else {
-    oldInputTextNode = document.createTextNode(
-      `${num}` + " " + `${currentValue}` + " ");
-    oldInput.appendChild(oldInputTextNode);
-  }
+  } else if (!bracketFlag) {
+      oldInputTextNode = document.createTextNode(
+        `${num}` + " " + `${currentValue}` + " ");
+      oldInput.appendChild(oldInputTextNode);
+    }
 
   // newInput Text
-  if (isNaN(answer)) {
+  if (bracketFlag) {
+    numArray.push(currentValue);
+    newInput.textContent = numArray.join("");
+  } else if (isNaN(answer)) {
     clearAll();
     newInput.textContent = "Error";
   } else if (answer == Infinity) {
@@ -297,9 +349,12 @@ function operate() {
     newInput.textContent = answer;
   } else {
     newInput.textContent = answer;
+    oldNumber = answer;
   }
 
-  numArray = [];
+  if (!bracketFlag) {
+    numArray = [];
+  }
   operator = currentValue;
   operatorFlag = true;
 }
