@@ -22,7 +22,6 @@ let oldOperator;
 
 
 function calculate(e) {
-  console.log(e.keyCode);
   if (e.keyCode && [...numbers].some(number => number.dataset.key == e.keyCode)) {
     if (e.shiftKey) {
       if (e.keyCode == 49) {
@@ -46,8 +45,6 @@ function calculate(e) {
   } else {
     currentValue = this.value;
   }
-
-  console.log(currentValue);
 
   if (currentValue < 10 || currentValue == '.') {
     makeNumber();
