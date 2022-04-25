@@ -37,20 +37,20 @@ function calculate() {
 
   if (numArray.length == 0) return;
 
-  if (currentValue == "^" && !operatorFlag 
+  if (currentValue == "^" && !operatorFlag && !bracketFlag
     || (operator == "^" && currentValue == "=")) {
       square();
   }
 
-  if (currentValue == "√" && !operatorFlag) {
+  if (currentValue == "√" && !operatorFlag && !bracketFlag) {
     findSquareRoot();
   }
   
-  if (currentValue == "Fn" && !operatorFlag) {
+  if (currentValue == "Fn" && !operatorFlag && !bracketFlag) {
     fibonacci();
   }
 
-  if (currentValue == '!' && !operatorFlag) {
+  if (currentValue == '!' && !operatorFlag && !bracketFlag) {
     factorial();
   }
 
@@ -91,6 +91,10 @@ function clearAll() {
   answer = undefined;
   equalFlag = false;
   operatorFlag = false;
+  oldOperator = undefined;
+  bracketFlag = false;
+  bracketValue = undefined;
+  oldNumber = undefined;
 }
 
 const stringToNumber = {
@@ -272,7 +276,9 @@ function equate() {
     num = parseFloat(numArray[3]);
     answer = parseFloat(stringToNumber[operator](answer, num));
     num = answer;
-    answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+    if (oldOperator) {
+      answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+    }
     newInput.textContent = answer;
     numArray = [0];
     equalFlag = true;
@@ -299,10 +305,12 @@ function equate() {
 
 // Use the operators
 function operate() {
+
+  if (bracketFlag && numArray.some(item => operators.includes(item))) return;
+  
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
-    
   } else if (answer == undefined) {
     answer = parseFloat(numArray.join(""));
     num = answer;

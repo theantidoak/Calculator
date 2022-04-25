@@ -37,7 +37,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 0.5fr 2.5fr;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .top-row {
@@ -46,6 +46,17 @@
   grid-template-rows: repeat(2, 1fr);
   grid-row: 1 / 2;
   gap: 0.5rem;
+}
+
+.solar {
+  grid-column: 4 / 6;
+  background-color: black;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.solar > * {
+  border: dotted white 1px;
 }
 
 .bottom-row {
@@ -59,7 +70,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-column: 1 / 4;
-  gap: 1rem;
+  gap: .5rem;
 }
 
 .left,
