@@ -2,9 +2,7 @@ const newInput = document.querySelector("#input-div");
 const oldInput = document.querySelector("#old-inputs");
 const buttons = document.querySelectorAll("button");
 const operators = ["÷", "×", "−", "+",];
-const symbols = ["÷", "×", "−", "+", "!", "Fn", "^", "√",];
 const numbers = document.querySelectorAll('[data-key]');
-const add = document.querySelector('.add');
 
 let currentValue;
 
@@ -228,14 +226,21 @@ function square() {
 
 // Square Root
 function findSquareRoot() {
-  if (!equalFlag) {
+  if (operators.some(op => op == operator)) {
+    answer = parseFloat(numArray.join(""));
+    num = 1;
+    answer = parseFloat(stringToNumber[currentValue](answer, num));
+    numArray = [answer];
+    answer = oldNumber;
+    console.log('continue here');
+  } else if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
     num = 1;
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(`${currentValue}` + " " + 
       `${oldInputTextNode}` + " " + "=" + " " + 
-      `${answer}` + " " + "=" + " ");
+      `${answer}` + " ");
     equalFlag = true;
   } else if (equalFlag) {
     num = 1;
@@ -243,7 +248,7 @@ function findSquareRoot() {
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
       `${currentValue}` + `${oldInputTextNode}` + " " + "=" + " " +
-      `${answer}` + " " + "=" + " ");
+      `${answer}` + " ");
   }
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
@@ -287,6 +292,12 @@ function factorial() {
   } else if (equalFlag) {
     num = 0;
     oldInputTextNode = answer;
+    if (answer > 170 || answer < -170) {
+      clearAll();
+      console.log(answer);
+      newInput.textContent = 'Maximum: 170';
+      return;
+    }
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
       `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " ");
