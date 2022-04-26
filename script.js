@@ -19,6 +19,7 @@ let bracketFlag = false;
 let bracketValue;
 let oldNumber;
 let oldOperator;
+let previousValue;
 
 
 function calculate(e) {
@@ -84,6 +85,10 @@ function calculate(e) {
   if (currentValue == "delete") {
     numArray.pop();
     newInput.textContent = numArray.join("");
+    bracketValue = undefined;
+    if (previousValue = ')') {
+      bracketFlag = !bracketFlag;
+    }
   }
 
   if (!equalFlag && currentValue == "=" && operator != "^" && !operatorFlag && !bracketFlag) {
@@ -93,6 +98,7 @@ function calculate(e) {
   if (operators.some((op) => op == currentValue)) {
     operate();
   }
+  previousValue = this.value;
 }
 
 // Brackets
@@ -100,14 +106,18 @@ function useParenthesis() {
   if (equalFlag) {
     clearAll();
   }
+  if (numArray.includes('(') && numArray.includes(')')) return;
+  if (currentValue == ')') {
+    if (!numArray.includes('(') || previousValue == currentValue) return;
+    bracketValue = ')';
+  } else {
+    if (!isNaN(previousValue) || previousValue == currentValue) return;
+    oldOperator = operator;
+  }
   numArray.push(currentValue);
   newInput.textContent = numArray.join("");
   bracketFlag = !bracketFlag;
-  if (currentValue == ')') {
-    bracketValue = ')';
-  } else {
-    oldOperator = operator;
-  }
+  
 }
 
 function clearAll() {
@@ -122,6 +132,7 @@ function clearAll() {
   bracketFlag = false;
   bracketValue = undefined;
   oldNumber = undefined;
+  previousValue = undefined;
 }
 
 const stringToNumber = {
@@ -333,13 +344,14 @@ function equate() {
 
 // Use the operators
 function operate() {
-
+  console.log('ho');
   if (bracketFlag && numArray.some(item => operators.includes(item))) return;
   
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
   } else if (answer == undefined) {
+    console.log('hi');
     answer = parseFloat(numArray.join(""));
     num = answer;
   } else if (!equalFlag) {
