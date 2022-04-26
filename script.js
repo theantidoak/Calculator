@@ -21,6 +21,9 @@ let bracketValue;
 let oldNumber;
 let oldOperator;
 let previousValue;
+let indexBracket1;
+let indexBracket2;
+let indexOperator;
 
 
 function calculate(e) {
@@ -253,6 +256,11 @@ function fibonacci() {
   } 
   num = 0;
   oldInputTextNode = answer;
+  if (answer > 1477) {
+    clearAll();
+    newInput.textContent = 'Maximum: 1477';
+    return;
+  }
   answer = stringToNumber[currentValue](answer, num).join(' ');
   oldInputTextNode = document.createTextNode(
     `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " ");
@@ -265,6 +273,11 @@ function fibonacci() {
 function factorial() {
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
+    if (answer > 170 || answer < -170) {
+      clearAll();
+      newInput.textContent = 'Maximum: 170';
+      return;
+    }
     num = 0;
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
@@ -320,9 +333,11 @@ function toggleNegative() {
 function equate() {
   if (operator == undefined) return;
   if (bracketValue == ')') {
-    answer = parseFloat(numArray[1]);
-    operator = numArray[2];
-    num = parseFloat(numArray[3]);
+    indexBracket1 = numArray.indexOf('(');
+    indexOperator = numArray.indexOf(operator);
+    indexBracket2 = numArray.indexOf(')');
+    answer = parseFloat(numArray.slice((indexBracket1 + 1), (indexOperator)).join(''));
+    num = parseFloat(numArray.slice((indexOperator + 1), (indexBracket2)).join(''));
     answer = parseFloat(stringToNumber[operator](answer, num));
     num = answer;
     if (oldOperator) {
@@ -367,9 +382,11 @@ function operate() {
     if (operatorFlag) {
       equalFlag = true;
     } else if (previousValue == ')') {
-      answer = parseFloat(numArray[1]);
-      operator = numArray[2];
-      num = parseFloat(numArray[3]);
+      indexBracket1 = numArray.indexOf('(');
+      indexOperator = numArray.indexOf(operator);
+      indexBracket2 = numArray.indexOf(')');
+      answer = parseFloat(numArray.slice((indexBracket1 + 1), (indexOperator)).join(''));
+      num = parseFloat(numArray.slice((indexOperator + 1), (indexBracket2)).join(''));
       answer = parseFloat(stringToNumber[operator](answer, num));
       num = answer;
       if (oldOperator) {
@@ -419,6 +436,7 @@ function operate() {
   } else if (answer == Infinity) {
     clearAll();
     answer = 0;
+    console.log('too high');
     newInput.textContent = answer;
   } else {
     newInput.textContent = answer;
