@@ -228,11 +228,15 @@ function square() {
 function findSquareRoot() {
   if (operators.some(op => op == operator)) {
     answer = parseFloat(numArray.join(""));
+    oldInputTextNode = document.createTextNode('√' + answer + ' ' + '=' + ' ');
     num = 1;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     numArray = [answer];
+    console.log(answer);
+    newInput.textContent = answer;
+    oldInput.appendChild(oldInputTextNode);
     answer = oldNumber;
-    console.log('continue here');
+    return;
   } else if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
     num = 1;
@@ -256,6 +260,7 @@ function findSquareRoot() {
 
 // Calculate fibonacci sequence
 function fibonacci() {
+  if (operators.some(op => op == operator)) return;
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
   } 
@@ -276,7 +281,20 @@ function fibonacci() {
 
 // Calculate Factorial
 function factorial() {
-  if (!equalFlag) {
+  if (operators.some(op => op == operator)) {
+    console.log('oldInput Continue');
+    answer = parseFloat(numArray.join(""));
+    firstAnswer = answer;
+    num = 0;
+    answer = parseFloat(stringToNumber[currentValue](answer, num));
+    oldInputTextNode = document.createTextNode('!' + firstAnswer + 
+      ' ' + '='+ ' ' + `${oldNumber + answer}` + ' ');
+    numArray = [answer];
+    newInput.textContent = answer;
+    oldInput.appendChild(oldInputTextNode);
+    answer = oldNumber;
+    return;
+  } else if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
     if (answer > 170 || answer < -170) {
       clearAll();
