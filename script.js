@@ -1,7 +1,8 @@
 const newInput = document.querySelector("#input-div");
 const oldInput = document.querySelector("#old-inputs");
 const buttons = document.querySelectorAll("button");
-const operators = ["÷", "×", "−", "+"];
+const operators = ["÷", "×", "−", "+",];
+const symbols = ["÷", "×", "−", "+", "!", "Fn", "^", "√",];
 const numbers = document.querySelectorAll('[data-key]');
 const add = document.querySelector('.add');
 
@@ -34,7 +35,7 @@ function calculate(e) {
       } else if (e.keyCode == 55) {
         currentValue = '√';
       } else if (e.keyCode == 56) {
-        currentValue = '*';
+        currentValue = '×';
       } else if (e.keyCode == 57) {
         currentValue = '(';
       } else if (e.keyCode == 48) {
@@ -63,7 +64,24 @@ function calculate(e) {
     clearAll();
   }
 
-  if (numArray.length == 0) return;
+  if (currentValue == "delete") {
+    numArray.pop();
+    newInput.textContent = numArray.join("");
+    bracketValue = undefined;
+    if (previousValue == ')') {
+      bracketFlag = !bracketFlag;
+    }
+  }
+
+  if (numArray.length == 0 && operators.some(op => op == currentValue) &&
+    operators.some(op => op == previousValue)) {
+      operator = currentValue;
+      oldInput.removeChild(oldInput.lastChild);
+      oldInputTextNode = document.createTextNode(`${oldNumber}` + ' ' + `${currentValue}` + " ");
+      oldInput.appendChild(oldInputTextNode);
+    }
+  
+  if (numArray.length == 0 || previousValue == currentValue) return;
 
   if (currentValue == "^" && !operatorFlag && !bracketFlag
     || (operator == "^" && currentValue == "=")) {
@@ -80,15 +98,6 @@ function calculate(e) {
 
   if (currentValue == '!' && !operatorFlag && !bracketFlag) {
     factorial();
-  }
-
-  if (currentValue == "delete") {
-    numArray.pop();
-    newInput.textContent = numArray.join("");
-    bracketValue = undefined;
-    if (previousValue = ')') {
-      bracketFlag = !bracketFlag;
-    }
   }
 
   if (!equalFlag && currentValue == "=" && operator != "^" && !operatorFlag && !bracketFlag) {
@@ -309,6 +318,7 @@ function toggleNegative() {
 
 // Use equal sign
 function equate() {
+  if (operator == undefined) return;
   if (bracketValue == ')') {
     answer = parseFloat(numArray[1]);
     operator = numArray[2];
@@ -340,23 +350,31 @@ function equate() {
   numArray = [0];
   equalFlag = true;
   operatorFlag = false;
+  operator = undefined;
 }
 
 // Use the operators
 function operate() {
-  console.log('ho');
   if (bracketFlag && numArray.some(item => operators.includes(item))) return;
   
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
   } else if (answer == undefined) {
-    console.log('hi');
     answer = parseFloat(numArray.join(""));
     num = answer;
   } else if (!equalFlag) {
     if (operatorFlag) {
       equalFlag = true;
+    } else if (previousValue == ')') {
+      answer = parseFloat(numArray[1]);
+      operator = numArray[2];
+      num = parseFloat(numArray[3]);
+      answer = parseFloat(stringToNumber[operator](answer, num));
+      num = answer;
+      if (oldOperator) {
+        answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+      }
     } else {
       num = parseFloat(numArray.join(""));
       answer = parseFloat(stringToNumber[operator](answer, num));
@@ -379,10 +397,17 @@ function operate() {
     }
     equalFlag = false;
   } else if (!bracketFlag) {
+    if (previousValue == ')') {
+      oldInputTextNode = document.createTextNode(`${num}` + " " + '=' + ' ' + 
+      `${answer}` + " " + `${currentValue}` + " ");
+      oldInput.appendChild(oldInputTextNode);
+      bracketValue = undefined;
+    } else {
       oldInputTextNode = document.createTextNode(
         `${num}` + " " + `${currentValue}` + " ");
       oldInput.appendChild(oldInputTextNode);
     }
+  }
 
   // newInput Text
   if (bracketFlag) {
