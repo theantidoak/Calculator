@@ -217,8 +217,7 @@ function square() {
     num = parseFloat(num.join(""));
     answer = parseFloat(stringToNumber[operator](answer, num));
     oldInputTextNode = document.createTextNode(
-      `${num}` + " " + "=" + " " + `${answer}` + " " + "=" + " "
-    );
+      `${num}` + " " + "=" + " " + `${answer}` + " " + "=" + " ");
     oldInput.appendChild(oldInputTextNode);
     newInput.textContent = answer;
     equalFlag = true;
@@ -403,8 +402,7 @@ function equate() {
   num = parseFloat(numArray.join(""));
   answer = parseFloat(stringToNumber[operator](answer, num));
   oldInputTextNode = document.createTextNode(
-    `${num}` + " " + `${currentValue}` + " "
-  );
+    num + " " + currentValue + " ");
   oldInput.appendChild(oldInputTextNode);
   if (isNaN(answer) || answer == Infinity) {
     clearAll();
@@ -496,7 +494,7 @@ function operate() {
       bracketValue = undefined;
     } else {
       oldInputTextNode = document.createTextNode(
-        `${num}` + " " + `${currentValue}` + " ");
+        num + " " + currentValue + " ");
       oldInput.appendChild(oldInputTextNode);
     }
   }
