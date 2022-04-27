@@ -392,7 +392,12 @@ function equate() {
     answer = parseFloat(stringToNumber[operator](answer, num));
     num = answer;
     answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
-    console.log('continue here')
+    newInput.textContent = answer;
+    oldOperator = undefined;
+    numArray = [0];
+    equalFlag = true;
+    operatorFlag = false;
+    operator = undefined;
     return;
   }
   num = parseFloat(numArray.join(""));
@@ -416,7 +421,6 @@ function equate() {
 // Use the operators
 function operate() {
   if (bracketFlag && numArray.some(item => operators.includes(item))) return;
-
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
@@ -440,9 +444,16 @@ function operate() {
     } else {
       if (oldOperator) {
         num = previousValue;
+        operator = "^";
         answer = parseFloat(stringToNumber[operator](answer, num));
         num = answer;
         answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+        newInput.textContent = answer;
+        oldOperator = undefined;
+        numArray = [0];
+        equalFlag = true;
+        operatorFlag = false;
+        operator = undefined;
       } else {
         num = parseFloat(numArray.join(""));
         answer = parseFloat(stringToNumber[operator](answer, num));
