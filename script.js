@@ -86,7 +86,7 @@ function calculate(e) {
   if (numArray.length == 0 || previousValue == currentValue) return;
 
   if (currentValue == "^" && !operatorFlag && !bracketFlag
-    || (operator == "^" && currentValue == "=") || squareFlag) {
+    || (operator == "^" && currentValue == "=")) {
       square();
   }
 
@@ -206,7 +206,7 @@ function square() {
     return;
   } else if (equalFlag) {
     oldInputTextNode = document.createTextNode(
-      `${answer}` + " " + `${currentValue}` + " ");
+      `${answer}` + `${currentValue}`);
     oldInput.appendChild(oldInputTextNode);
     newInput.textContent = answer + currentValue;
     equalFlag = false;
@@ -446,16 +446,21 @@ function operate() {
         num = previousValue;
         operator = "^";
         answer = parseFloat(stringToNumber[operator](answer, num));
+        numArray = num;
         num = answer;
         answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
         newInput.textContent = answer;
         oldOperator = undefined;
-        numArray = [0];
         equalFlag = true;
-        operatorFlag = false;
         operator = undefined;
+        squareFlag = true;
       } else {
-        num = parseFloat(numArray.join(""));
+        if (numArray.includes('^')) {
+          indexBracket1 = numArray.indexOf('^');
+          num = numArray.slice((indexBracket1 + 1))
+        } else {
+          num = parseFloat(numArray.join(""));
+        }
         answer = parseFloat(stringToNumber[operator](answer, num));
       }
     }
@@ -470,6 +475,13 @@ function operate() {
       oldInputTextNode = document.createTextNode(
         `${num}` + " " + '=' + ' ' + `${answer}` + " " + `${currentValue}` + " ");
       oldInput.appendChild(oldInputTextNode);
+    } else if (squareFlag) {
+      ///HERE
+      oldInputTextNode = document.createTextNode(
+        `${numArray}` + " " + "=" + " " + answer + " " + `${currentValue}` + " ");
+      oldInput.appendChild(oldInputTextNode);
+      squareFlag = false;
+      numArray = [0];
     } else {
       oldInputTextNode = document.createTextNode(
         `${answer}` + " " + `${currentValue}` + " ");
