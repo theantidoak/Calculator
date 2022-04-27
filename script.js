@@ -22,6 +22,7 @@ let previousValue;
 let indexBracket1;
 let indexBracket2;
 let indexOperator;
+let squareFlag = false;
 
 
 function calculate(e) {
@@ -85,7 +86,7 @@ function calculate(e) {
   if (numArray.length == 0 || previousValue == currentValue) return;
 
   if (currentValue == "^" && !operatorFlag && !bracketFlag
-    || (operator == "^" && currentValue == "=")) {
+    || (operator == "^" && currentValue == "=") || squareFlag) {
       square();
   }
 
@@ -193,7 +194,17 @@ const stringToNumber = {
 
 // Square the number
 function square() {
-  if (equalFlag) {
+  if (operators.some(op => op == operator)) {
+    oldNumber = answer;
+    oldOperator = operator;
+    answer = parseFloat(numArray.join(""));
+    oldInputTextNode = document.createTextNode(answer + ' ' + '^' + ' ');
+    numArray = [answer, currentValue];
+    newInput.textContent = answer + currentValue;
+    oldInput.appendChild(oldInputTextNode);
+    operator = '';
+    return;
+  } else if (equalFlag) {
     oldInputTextNode = document.createTextNode(
       `${answer}` + " " + `${currentValue}` + " ");
     oldInput.appendChild(oldInputTextNode);
@@ -232,7 +243,6 @@ function findSquareRoot() {
     num = 1;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     numArray = [answer];
-    console.log(answer);
     newInput.textContent = answer;
     oldInput.appendChild(oldInputTextNode);
     answer = oldNumber;
@@ -282,7 +292,6 @@ function fibonacci() {
 // Calculate Factorial
 function factorial() {
   if (operators.some(op => op == operator)) {
-    console.log('oldInput Continue');
     answer = parseFloat(numArray.join(""));
     firstAnswer = answer;
     num = 0;
@@ -312,7 +321,6 @@ function factorial() {
     oldInputTextNode = answer;
     if (answer > 170 || answer < -170) {
       clearAll();
-      console.log(answer);
       newInput.textContent = 'Maximum: 170';
       return;
     }
@@ -378,6 +386,14 @@ function equate() {
     bracketValue = 'oldInput';
     bracketFlag = false;
     return;
+  } else if (oldOperator) {
+    num = previousValue;
+    operator = "^";
+    answer = parseFloat(stringToNumber[operator](answer, num));
+    num = answer;
+    answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+    console.log('continue here')
+    return;
   }
   num = parseFloat(numArray.join(""));
   answer = parseFloat(stringToNumber[operator](answer, num));
@@ -400,7 +416,7 @@ function equate() {
 // Use the operators
 function operate() {
   if (bracketFlag && numArray.some(item => operators.includes(item))) return;
-  
+
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
@@ -422,8 +438,15 @@ function operate() {
         answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
       }
     } else {
-      num = parseFloat(numArray.join(""));
-      answer = parseFloat(stringToNumber[operator](answer, num));
+      if (oldOperator) {
+        num = previousValue;
+        answer = parseFloat(stringToNumber[operator](answer, num));
+        num = answer;
+        answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+      } else {
+        num = parseFloat(numArray.join(""));
+        answer = parseFloat(stringToNumber[operator](answer, num));
+      }
     }
   }
 
@@ -465,7 +488,6 @@ function operate() {
   } else if (answer == Infinity) {
     clearAll();
     answer = 0;
-    console.log('too high');
     newInput.textContent = answer;
   } else {
     newInput.textContent = answer;
