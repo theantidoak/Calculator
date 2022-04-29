@@ -214,14 +214,14 @@ function square() {
     oldNumber = answer;
     oldOperator = operator;
     answer = parseFloat(numArray.join(""));
-    oldInputTextNode = document.createTextNode(answer + " " + "^" + " ");
+    oldInputTextNode = document.createTextNode(answer + "^");
     numArray = [answer, currentValue];
     newInput.textContent = answer + currentValue;
     oldInput.appendChild(oldInputTextNode);
     operator = "";
     return;
   } else if (equalFlag) {
-    oldInputTextNode = document.createTextNode(`${answer}` + `${currentValue}`);
+    oldInputTextNode = document.createTextNode(answer + currentValue);
     oldInput.appendChild(oldInputTextNode);
     newInput.textContent = answer + currentValue;
     equalFlag = false;
@@ -239,9 +239,7 @@ function square() {
     equalFlag = true;
   } else {
     answer = parseFloat(newInput.textContent);
-    oldInputTextNode = document.createTextNode(
-      `${answer}` + " " + `${currentValue}` + " "
-    );
+    oldInputTextNode = document.createTextNode(answer + currentValue);
     oldInput.appendChild(oldInputTextNode);
     operator = currentValue;
     numArray.push(currentValue);
@@ -253,7 +251,7 @@ function square() {
 function findSquareRoot() {
   if (operators.some((op) => op == operator)) {
     answer = parseFloat(numArray.join(""));
-    oldInputTextNode = document.createTextNode("√" + answer + " " + "=" + " ");
+    oldInputTextNode = document.createTextNode("√" + answer + " ");
     num = 1;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     numArray = [answer];
@@ -267,33 +265,15 @@ function findSquareRoot() {
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      `${currentValue}` +
-        " " +
-        `${oldInputTextNode}` +
-        " " +
-        "=" +
-        " " +
-        `${answer}` +
-        " " +
-        "|" +
-        " "
-    );
+      currentValue + " " + oldInputTextNode + " " + "=" + 
+        " " + answer + " " + "|" + " ");
     equalFlag = true;
   } else if (equalFlag) {
     num = 1;
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      `${currentValue}` +
-        `${oldInputTextNode}` +
-        " " +
-        "=" +
-        " " +
-        `${answer}` +
-        " " +
-        "|" +
-        " "
-    );
+      currentValue + oldInputTextNode + " " + "=" + " " + answer + " " + "|" + " ");
   }
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
@@ -329,7 +309,7 @@ function factorial() {
     num = 0;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      "!" + firstAnswer + " " + "=" + " " + `${oldNumber + answer}` + " "
+      "!" + firstAnswer + " "
     );
     numArray = [answer];
     newInput.textContent = answer;
@@ -347,7 +327,8 @@ function factorial() {
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " "
+      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " " + answer + " " +
+        "|" + " "
     );
     equalFlag = true;
   } else if (equalFlag) {
@@ -360,7 +341,8 @@ function factorial() {
     }
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " "
+      `${oldInputTextNode}` + `${currentValue}` + " " + "=" + " " + answer + " " +
+      "|" + " "
     );
   }
   oldInput.appendChild(oldInputTextNode);
@@ -412,12 +394,16 @@ function equate() {
       numArray.slice(indexBracket1 + 1, indexOperator).join("")
     );
     num = parseFloat(numArray.slice(indexOperator + 1, indexBracket2).join(""));
+    
     answer = parseFloat(stringToNumber[operator](answer, num));
+    oldInputTextNode = document.createTextNode(
+      answer + " " + "=" + " ");
     num = answer;
     if (oldOperator) {
       answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
     }
     newInput.textContent = answer;
+    oldInput.appendChild(oldInputTextNode);
     numArray = [0];
     equalFlag = true;
     bracketValue = "oldInput";
@@ -440,9 +426,15 @@ function equate() {
   }
   num = parseFloat(numArray.join(""));
   answer = parseFloat(stringToNumber[operator](answer, num));
-  oldInputTextNode = document.createTextNode(
-    num + " " + currentValue + " " + answer + " " + "|" + " "
-  );
+  if (previousValue == '√' || previousValue == '!') {
+    oldInputTextNode = document.createTextNode(
+      currentValue + " " + answer + " " + "|" + " "
+    );
+  } else {
+    oldInputTextNode = document.createTextNode(
+      num + " " + currentValue + " " + answer + " " + "|" + " "
+    );
+  }
   oldInput.appendChild(oldInputTextNode);
   if (isNaN(answer) || answer == Infinity) {
     clearAll();
@@ -482,6 +474,7 @@ function operate() {
       num = answer;
       if (oldOperator) {
         answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+        oldOperator = undefined;
       }
     } else {
       if (oldOperator) {
@@ -517,33 +510,32 @@ function operate() {
       oldInput.appendChild(oldInputTextNode);
     } else if (bracketValue == "oldInput") {
       oldInputTextNode = document.createTextNode(
-        `${num}` + " " + "=" + " " + `${answer}` + " " + `${currentValue}` + " "
+        num + " " + "|" + " " + answer + " " + `${currentValue}` + " "
       );
       oldInput.appendChild(oldInputTextNode);
     } else if (squareFlag) {
       oldInputTextNode = document.createTextNode(
-        `${numArray}` + " " + "=" + " " + answer + " " + `${currentValue}` + " "
+        numArray + " " + currentValue + " "
       );
       oldInput.appendChild(oldInputTextNode);
       squareFlag = false;
       numArray = [0];
     } else {
       oldInputTextNode = document.createTextNode(
-        `${answer}` + " " + `${currentValue}` + " "
-      );
+        answer + " " + currentValue + " ");
       oldInput.appendChild(oldInputTextNode);
     }
     equalFlag = false;
   } else if (!bracketFlag) {
     if (previousValue == ")") {
       oldInputTextNode = document.createTextNode(
-        `${num}` + " " + "=" + " " + `${answer}` + " " + `${currentValue}` + " "
+        num + " " + currentValue + " "
       );
       oldInput.appendChild(oldInputTextNode);
       bracketValue = undefined;
     } else if (previousValue == "√") {
       oldInputTextNode = document.createTextNode(
-        answer + " " + currentValue + " "
+        currentValue + " "
       );
       oldInput.appendChild(oldInputTextNode);
     } else {
