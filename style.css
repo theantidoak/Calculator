@@ -1,4 +1,5 @@
 .calculator {
+  user-select: none;
   background-color: blue;
   width: 25vw;
   height: 90vh;
@@ -16,7 +17,7 @@
   border-radius: 10px;
   box-shadow: 0 0 10px 0.2px white;
   display: grid;
-  grid-template-rows: 1fr 3fr;
+  grid-template-rows: 1.5fr 3fr;
 }
 
 #input-div {
@@ -29,7 +30,7 @@
 #old-inputs {
   text-align: right;
   font-size: 3vh;
-  max-height: 6vh;
+  max-height: 7vh;
   overflow-x: auto;
 }
 
