@@ -190,7 +190,7 @@ const stringToNumber = {
     if (x == 0) {
       output = [1];
     }
-    return output;
+    return output.reduce((a, b) => a.concat(b).concat(','), []).slice(0, -1);
   },
   "!": function (x, y) {
     const factArray = [];
