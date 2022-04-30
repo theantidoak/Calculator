@@ -81,6 +81,11 @@
   gap: 1rem;
 }
 
+.left > *, .middle > *, .right > * {
+  background-color: blue;
+  color: white;
+}
+
 .side-column {
   display: grid;
   grid-column: 4 / 5;
@@ -91,6 +96,11 @@ button {
   box-shadow: inset 0 0 5px 1px blue;
   border-radius: 10px;
   font-size: 1.3vw;
+  transition: all .25s ease;
+}
+
+button:hover {
+  transform: scale(1.25);
 }
 
 .root > *,
