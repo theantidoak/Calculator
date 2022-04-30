@@ -5,10 +5,6 @@ const operators = ["÷", "×", "−", "+"];
 const numbers = document.querySelectorAll("[data-key]");
 
 let currentValue;
-
-buttons.forEach((button) => button.addEventListener("click", calculate));
-window.addEventListener("keydown", calculate);
-
 let numArray = [];
 let answer;
 let operator;
@@ -23,6 +19,9 @@ let indexBracket1;
 let indexBracket2;
 let indexOperator;
 let squareFlag = false;
+
+buttons.forEach((button) => button.addEventListener("click", calculate));
+window.addEventListener("keydown", calculate);
 
 function calculate(e) {
   if (
@@ -451,6 +450,7 @@ function equate() {
 // Use the operators
 function operate() {
   if (bracketFlag && numArray.some((item) => operators.includes(item))) return;
+  
   // Equation
   if (bracketFlag) {
     answer = numArray.join("");
