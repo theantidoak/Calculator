@@ -7,6 +7,7 @@ const numbers = document.querySelectorAll("[data-key]");
 let currentValue;
 let numArray = [];
 let answer;
+let num;
 let operator;
 let equalFlag = false;
 let operatorFlag = false;
@@ -78,18 +79,25 @@ function calculate(e) {
   }
 
   if (currentValue == "delete") {
-    if (numbEquateFlag || previousValue == "=" || 
-      operators.some(op => op == previousValue) || previousValue == "!" || 
-      previousValue == "√") return;
-    numArray.pop();
-    newInput.textContent = numArray.join("");
-    bracketValue = undefined;
-    if (previousValue == ")") {
-      bracketFlag = !bracketFlag;
+
+    if ((!numbEquateFlag && !numArray.includes('(')) || numArray.length == 0 ||
+      equalFlag || ((num == 0 && equalFlag != true) || (num == 0 && numbEquateFlag)) || 
+      ((num == 1 && equalFlag) || (num == 1 && numbEquateFlag))) {
+      return;
     }
-    if (operator == "^" && !numArray.includes('^')) {
+
+    let pop = numArray.pop();
+    
+    if (pop == ')' || pop == '(') {
+      bracketFlag = !bracketFlag;
+      bracketValue = undefined;
+    }
+
+    if (operators.some(op => op == pop) || pop == "^") {
       operator = undefined;
     }
+
+    newInput.textContent = numArray.join("");
     return;
   }
 
@@ -330,9 +338,7 @@ function factorial() {
     firstAnswer = answer;
     num = 0;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
-    oldInputTextNode = document.createTextNode(
-      "!" + firstAnswer + " "
-    );
+    oldInputTextNode = document.createTextNode(firstAnswer + "!" + " ");
     numArray = [answer];
     newInput.textContent = answer;
     oldInput.appendChild(oldInputTextNode);
@@ -370,6 +376,7 @@ function factorial() {
   }
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
+  numArray = [0];
 }
 
 // Create a Number and/or decimal
@@ -570,10 +577,11 @@ function operate() {
       if (operator == "^") {
         oldInputTextNode = document.createTextNode(oldNumber + operator + num + ' ' + currentValue + ' ');
         oldNumber = undefined;
+      } else if (previousValue == '!') {
+        oldInputTextNode = document.createTextNode(currentValue + " ");
       } else {
         oldInputTextNode = document.createTextNode(
-          num + " " + currentValue + " "
-        );
+          num + " " + currentValue + " ");
       }
       oldInput.appendChild(oldInputTextNode);
     }
