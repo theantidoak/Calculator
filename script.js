@@ -257,6 +257,7 @@ function square() {
     newInput.textContent = answer;
     equalFlag = true;
     numArray = [0];
+    operator = undefined;
   } else {
     if (numArray.includes('^')) return;
     answer = parseFloat(newInput.textContent);
