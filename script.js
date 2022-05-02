@@ -80,8 +80,8 @@ function calculate(e) {
 
   if (currentValue == "delete") {
 
-    if ((!numbEquateFlag && !numArray.includes('(')) || numArray.length == 0 ||
-      equalFlag || ((num == 0 && equalFlag != true) || (num == 0 && numbEquateFlag)) || 
+    if ((numbEquateFlag && numArray.includes('(')) || numArray.length == 0 ||
+      equalFlag || ((num == 0 && !equalFlag) || (num == 0 && numbEquateFlag)) || 
       ((num == 1 && equalFlag) || (num == 1 && numbEquateFlag))) {
       return;
     }
