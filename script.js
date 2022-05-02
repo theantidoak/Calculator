@@ -447,6 +447,7 @@ function equate() {
     operator = undefined;
     return;
   } else if (oldOperator) {
+    console.log('oh');
     indexOperator = numArray.indexOf('^');
     num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
     operator = "^";
@@ -519,6 +520,7 @@ function operate() {
       }
     } else {
       if (oldOperator) {
+        console.log('here too');
         indexOperator = numArray.indexOf('^');
         num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
         operator = "^";
@@ -549,13 +551,12 @@ function operate() {
   // oldInput Text
   if (equalFlag) {
     if (num == 1) {
-      oldInputTextNode = document.createTextNode(
-        answer + " " + currentValue + " "
-      );
+      oldInputTextNode = document.createTextNode(answer + " " + currentValue + " ");
       oldInput.appendChild(oldInputTextNode);
     } else if (bracketValue == "oldInput") {
+      console.log('hi');
       oldInputTextNode = document.createTextNode(
-        num + " " + "|" + " " + answer + " " + `${currentValue}` + " "
+        " " + answer + " " + currentValue + " "
       );
       oldInput.appendChild(oldInputTextNode);
     } else if (squareFlag) {
