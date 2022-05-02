@@ -87,6 +87,9 @@ function calculate(e) {
     if (previousValue == ")") {
       bracketFlag = !bracketFlag;
     }
+    if (operator == "^" && !numArray.includes('^')) {
+      operator = undefined;
+    }
     return;
   }
 
@@ -253,6 +256,7 @@ function square() {
     oldInput.appendChild(oldInputTextNode);
     newInput.textContent = answer;
     equalFlag = true;
+    numArray = [0];
   } else {
     if (numArray.includes('^')) return;
     answer = parseFloat(newInput.textContent);
