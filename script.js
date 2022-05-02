@@ -93,8 +93,14 @@ function calculate(e) {
       bracketValue = undefined;
     }
 
-    if (operators.some(op => op == pop) || pop == "^") {
+    if (operators.some(op => op == pop)) {
       operator = undefined;
+    }
+
+    if (pop == "^") {
+      numbEquateFlag = false;
+      operator = undefined;
+      answer = undefined;
     }
 
     newInput.textContent = numArray.join("");
@@ -381,7 +387,7 @@ function factorial() {
 
 // Create a Number and/or decimal
 function makeNumber() {
-  if (numArray.includes(".") & (currentValue == ".")) return;
+  if (numArray.includes(".") && (currentValue == ".")) return;
   if (equalFlag) {
     clearAll();
   }
