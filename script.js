@@ -58,7 +58,7 @@ const stringToNumber = {
   "√": function (x, y) {
     return Math.sqrt(x) * y;
   },
-  Fn: function (x, y) {
+  'F_n': function (x, y) {
     let output = [1, 1];
     y = 0;
     if (x < 0) return "OOPS";
@@ -66,6 +66,8 @@ const stringToNumber = {
       output.push(output[i - 2] + output[i - 1]);
     }
     if (x == 0) {
+      output = [0];
+    } else if (x == 1) {
       output = [1];
     }
     return output.reduce((a, b) => a.concat(b).concat(','), []).slice(0, -1);
@@ -97,7 +99,7 @@ function calculate(e) {
       if (e.keyCode == 49) {
         currentValue = "!";
       } else if (e.keyCode == 53) {
-        currentValue = "Fn";
+        currentValue = "F_n";
       } else if (e.keyCode == 54) {
         currentValue = "^";
       } else if (e.keyCode == 55) {
@@ -140,7 +142,7 @@ function calculate(e) {
   }
 
   /* Clear all and return variables to undefined */
-  if (currentValue == "clear" || operator == "Fn") {
+  if (currentValue == "clear" || operator == "F_n") {
     clearAll();
     operateEquateFlag = false;
   }
@@ -188,7 +190,7 @@ function calculate(e) {
   }
 
   /* Display the fibonacci sequence up to the input number */
-  if (currentValue == "Fn" && !operatorFlag && !bracketFlag) {
+  if (currentValue == "F_n" && !operatorFlag && !bracketFlag) {
     if (operateEquateFlag) return;
     fibonacci();
   }
@@ -389,8 +391,10 @@ function findSquareRoot() {
   newInput.textContent = answer;
 }
 
+
 // Calculate fibonacci sequence
 function fibonacci() {
+  let fibonacci = document.createElement('sub');
   if (operators.some((op) => op == operator)) return;
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
@@ -403,16 +407,21 @@ function fibonacci() {
     return;
   }
   answer = stringToNumber[currentValue](answer, num).join(" ");
-  oldInputTextNode = document.createTextNode(
-    oldInputTextNode + currentValue + " " + "=" + " ");
+  oldInputTextNode = document.createTextNode(oldInputTextNode);
+  fibonacci.appendChild(oldInputTextNode);
+  oldInputTextNode = document.createTextNode('F');
+  oldInput.appendChild(oldInputTextNode);
+  oldInput.appendChild(fibonacci);
+  oldInputTextNode = document.createTextNode(" " + "=" + " ");
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
-  operator = "Fn";
+  operator = "F_n";
 }
+
 
 // Calculate Factorial
 function factorial() {
-
+  
   /* If user wishes to factorial a number after using an operator 
     in an operation chain */ 
   if (operators.some((op) => op == operator)) {
