@@ -22,6 +22,6 @@ Because of the difference between calculating:
   5. Using brackets before and after each
   6. Using top functions before and after each
 
-  find and debugging took a long time. 
+  finding and debugging took a long time. 
 
 What I learned from this is to make comments early. (I made them at the end this time). Also if I revisit, I may try to contain every button function in its own function instead of having the operate() and equate() functions which seemed to make my operator and top functions cross wires. 
