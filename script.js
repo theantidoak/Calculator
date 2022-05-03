@@ -22,9 +22,57 @@ let indexOperator;
 let squareFlag = false;
 let numbEquateFlag = false;
 
+// Math functions
+const stringToNumber = {
+  "+": function (x, y) {
+    return x + y;
+  },
+  "−": function (x, y) {
+    return x - y;
+  },
+  "×": function (x, y) {
+    return x * y;
+  },
+  "÷": function (x, y) {
+    return x / y;
+  },
+  "^": function (x, y) {
+    return x ** y;
+  },
+  "√": function (x, y) {
+    return Math.sqrt(x) * y;
+  },
+  Fn: function (x, y) {
+    let output = [1, 1];
+    y = 0;
+    if (x < 0) return "OOPS";
+    for (let i = 2; i < x; i++) {
+      output.push(output[i - 2] + output[i - 1]);
+    }
+    if (x == 0) {
+      output = [1];
+    }
+    return output.reduce((a, b) => a.concat(b).concat(','), []).slice(0, -1);
+  },
+  "!": function (x, y) {
+    const factArray = [];
+    y = 0;
+    while (x > 0) {
+      factArray.unshift(x);
+      x--;
+    }
+    while (x < 0) {
+      factArray.unshift(x);
+      x++;
+    }
+    return factArray.reduce((start, next) => (next == 0 ? 1 : start * next), 1);
+  }
+};
+
 buttons.forEach((button) => button.addEventListener("click", calculate));
 window.addEventListener("keydown", calculate);
 
+// Master Function to call each button
 function calculate(e) {
   if (
     e.keyCode &&
@@ -82,29 +130,9 @@ function calculate(e) {
 
     if ((numbEquateFlag && numArray.includes('(')) || numArray.length == 0 ||
       equalFlag || ((num == 0 && !equalFlag) || (num == 0 && numbEquateFlag)) || 
-      ((num == 1 && equalFlag) || (num == 1 && numbEquateFlag))) {
-      return;
-    }
+      ((num == 1 && equalFlag) || (num == 1 && numbEquateFlag))) return;
 
-    let pop = numArray.pop();
-    
-    if (pop == ')' || pop == '(') {
-      bracketFlag = !bracketFlag;
-      bracketValue = undefined;
-    }
-
-    if (operators.some(op => op == pop)) {
-      operator = undefined;
-    }
-
-    if (pop == "^") {
-      numbEquateFlag = false;
-      operator = undefined;
-      answer = undefined;
-    }
-
-    newInput.textContent = numArray.join("");
-    return;
+    deleteLast();
   }
 
   if (
@@ -114,9 +142,7 @@ function calculate(e) {
   ) {
     operator = currentValue;
     oldInput.removeChild(oldInput.lastChild);
-    oldInputTextNode = document.createTextNode(
-      `${oldNumber}` + " " + `${currentValue}` + " "
-    );
+    oldInputTextNode = document.createTextNode(oldNumber + " " + currentValue + " ");
     oldInput.appendChild(oldInputTextNode);
   }
 
@@ -163,7 +189,7 @@ function calculate(e) {
   previousValue = this.value;
 }
 
-// Brackets
+// Use of open or close Brackets
 function useParenthesis() {
   if (equalFlag) {
     clearAll();
@@ -196,51 +222,42 @@ function clearAll() {
   previousValue = undefined;
 }
 
-const stringToNumber = {
-  "+": function (x, y) {
-    return x + y;
-  },
-  "−": function (x, y) {
-    return x - y;
-  },
-  "×": function (x, y) {
-    return x * y;
-  },
-  "÷": function (x, y) {
-    return x / y;
-  },
-  "^": function (x, y) {
-    return x ** y;
-  },
-  "√": function (x, y) {
-    return Math.sqrt(x) * y;
-  },
-  Fn: function (x, y) {
-    let output = [1, 1];
-    y = 0;
-    if (x < 0) return "OOPS";
-    for (let i = 2; i < x; i++) {
-      output.push(output[i - 2] + output[i - 1]);
+// Delete button
+function deleteLast() {
+  let pop = numArray.pop();
+    
+    if (pop == ')' || pop == '(') {
+      bracketFlag = !bracketFlag;
+      bracketValue = undefined;
     }
-    if (x == 0) {
-      output = [1];
+
+    if (operators.some(op => op == pop)) {
+      operator = undefined;
     }
-    return output.reduce((a, b) => a.concat(b).concat(','), []).slice(0, -1);
-  },
-  "!": function (x, y) {
-    const factArray = [];
-    y = 0;
-    while (x > 0) {
-      factArray.unshift(x);
-      x--;
+
+    if (pop == "^") {
+      if (oldOperator) {
+        operator = [...oldInput.textContent].filter((op) => {
+          let arr = [];
+          if (operators.includes(op)) {
+            arr.push(op);
+          }
+          if (arr.length > 0) {
+            return arr;
+          }
+        }).slice(-1).join();
+        answer = oldNumber;
+        oldOperator = undefined;
+      } else {
+        operator = undefined;
+        answer = undefined;
+      }
+      numbEquateFlag = false;
     }
-    while (x < 0) {
-      factArray.unshift(x);
-      x++;
-    }
-    return factArray.reduce((start, next) => (next == 0 ? 1 : start * next), 1);
-  }
-};
+
+    newInput.textContent = numArray.join("");
+    return;
+}
 
 // Square the number
 function square() {
