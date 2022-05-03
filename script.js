@@ -426,31 +426,34 @@ function equate() {
     indexBracket1 = numArray.indexOf("(");
     indexOperator = numArray.indexOf(operator);
     indexBracket2 = numArray.indexOf(")");
-    answer = parseFloat(
-      numArray.slice(indexBracket1 + 1, indexOperator).join("")
-    );
+    answer = parseFloat(numArray.slice(indexBracket1 + 1, indexOperator).join(""));
     num = parseFloat(numArray.slice(indexOperator + 1, indexBracket2).join(""));
-    
     answer = parseFloat(stringToNumber[operator](answer, num));
-    oldInputTextNode = document.createTextNode(
-      answer + " " + "=" + " ");
-    num = answer;
     if (oldOperator) {
+      oldInputTextNode = document.createTextNode(answer + " " + "=" + " ");
+      oldInput.appendChild(oldInputTextNode);
+      num = answer;
       answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
     }
-    newInput.textContent = answer;
+    oldInputTextNode = document.createTextNode(answer + ' ' + '|' + ' ');
     oldInput.appendChild(oldInputTextNode);
+    newInput.textContent = answer;
     numArray = [0];
     equalFlag = true;
     bracketValue = "oldInput";
     bracketFlag = false;
     operator = undefined;
     return;
+  } else if (bracketValue == "oldInput") {
+    console.log(num);
+    console.log(operator);
+    console.log(answer);
   } else if (oldOperator) {
     console.log('oh');
     indexOperator = numArray.indexOf('^');
     num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
     operator = "^";
+    console.log(operator);
     oldInputTextNode = document.createTextNode(answer + operator + num + ' ' + '=' + ' ');
     oldInput.appendChild(oldInputTextNode);
     answer = parseFloat(stringToNumber[operator](answer, num));
@@ -490,6 +493,7 @@ function equate() {
   operator = undefined;
 }
 
+
 // Use the operators
 function operate() {
   if (bracketFlag && numArray.some((item) => operators.includes(item))) return;
@@ -519,8 +523,7 @@ function operate() {
         oldOperator = undefined;
       }
     } else {
-      if (oldOperator) {
-        console.log('here too');
+      if (oldOperator && bracketValue != 'oldInput') {
         indexOperator = numArray.indexOf('^');
         num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
         operator = "^";
@@ -554,9 +557,8 @@ function operate() {
       oldInputTextNode = document.createTextNode(answer + " " + currentValue + " ");
       oldInput.appendChild(oldInputTextNode);
     } else if (bracketValue == "oldInput") {
-      console.log('hi');
       oldInputTextNode = document.createTextNode(
-        " " + answer + " " + currentValue + " "
+        answer + " " + currentValue + " "
       );
       oldInput.appendChild(oldInputTextNode);
     } else if (squareFlag) {
