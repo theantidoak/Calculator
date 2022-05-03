@@ -240,10 +240,7 @@ function deleteLast() {
         operator = [...oldInput.textContent].filter((op) => {
           let arr = [];
           if (operators.includes(op)) {
-            arr.push(op);
-          }
-          if (arr.length > 0) {
-            return arr;
+            return arr.push(op);
           }
         }).slice(-1).join();
         answer = oldNumber;
