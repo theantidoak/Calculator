@@ -128,7 +128,7 @@ function calculate(e) {
     if (operateEquateFlag) return;
     makeNumber();
   }
-
+  
   /* Choose a parenthesis */
   if (currentValue == "(" || currentValue == ")") {
     if (operateEquateFlag) return;
@@ -142,7 +142,7 @@ function calculate(e) {
   }
 
   /* Clear all and return variables to undefined */
-  if (currentValue == "clear" || operator == "F_n") {
+  if (currentValue == "clear") {
     clearAll();
     operateEquateFlag = false;
   }
@@ -152,7 +152,8 @@ function calculate(e) {
 
     if ((operateEquateFlag && numArray.includes('(')) || numArray.length == 0 ||
       equalFlag || ((num == 0 && !equalFlag) || (num == 0 && operateEquateFlag)) || 
-      ((num == 1 && equalFlag) || (num == 1 && operateEquateFlag))) return;
+      ((num == 1 && equalFlag) || (num == 1 && operateEquateFlag)) ||
+      (answer == undefined && operateEquateFlag)) return;
 
     deleteLast();
   }
@@ -173,7 +174,7 @@ function calculate(e) {
   /* Don't allow the same operator or functions to run more than once */
   if (numArray.length == 0 || previousValue == currentValue) return;
 
-  /* Use the square() function to implment '^' sign and function.
+  /* Use the square() function to implement '^' sign and function.
     Also after the second number when when the equal button is pressed*/
   if (
     (currentValue == "^" && !operatorFlag && !bracketFlag) ||
@@ -219,23 +220,25 @@ function calculate(e) {
 
 
 function useParenthesis() {
+  if (numArray[numArray.length - 1] == "^") return;
   if (equalFlag) {
     clearAll();
   }
 
   // Allow only one of each bracket
   if (numArray.includes("(") && numArray.includes(")")) return;
-
+  
   /* Open bracket value path and start equation if closed bracket, 
     open oldOperator path if open bracket */
   if (currentValue == ")") {
     if (!numArray.includes("(") || previousValue == currentValue) return;
     bracketValue = ")";
   } else {
-    if (!isNaN(previousValue) || previousValue == currentValue) return;
+    if (!isNaN(previousValue) || previousValue == currentValue || 
+      previousValue == ")") return;
     oldOperator = operator;
   }
-
+  
   /* Update the big text*/
   numArray.push(currentValue);
   newInput.textContent = numArray.join("");
@@ -273,6 +276,10 @@ function deleteLast() {
       bracketValue = undefined;
     }
 
+    if (pop == '(') {
+      answer = undefined;
+    }
+
     /* Undo operator paths */
     if (operators.some(op => op == pop)) {
       operator = undefined;
@@ -295,7 +302,7 @@ function deleteLast() {
       }
       operateEquateFlag = false;
     }
-
+    previousValue = 'delete';
     newInput.textContent = numArray.join("");
     return;
 }
@@ -326,6 +333,7 @@ function square() {
 
   /* Complete the operation once the user has entered a number after the '^' */
   } else if (!equalFlag && operator == "^") {
+    if (numArray[numArray.length - 1] == "^") return;
     if (currentValue == '^') return;
     num = numArray.slice((numArray.indexOf("^") + 1));
     num = parseFloat(num.join(""));
@@ -374,8 +382,7 @@ function findSquareRoot() {
     oldInputTextNode = answer;
     answer = parseFloat(stringToNumber[currentValue](answer, num));
     oldInputTextNode = document.createTextNode(
-      currentValue + " " + oldInputTextNode + " " + "=" + " " + 
-      answer + " " + "|" + " ");
+      currentValue + oldInputTextNode + " " + "=" + " " + answer + " " + "|" + " ");
     equalFlag = true;
 
   /* If user wishes to squareroot a number after using an equal sign 
@@ -395,10 +402,12 @@ function findSquareRoot() {
 // Calculate fibonacci sequence
 function fibonacci() {
   let fibonacci = document.createElement('sub');
-  if (operators.some((op) => op == operator)) return;
+  
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
   }
+  oldNumber = num;
+  oldOperator = operator;
   num = 0;
   oldInputTextNode = answer;
   if (answer > 1477) {
@@ -412,10 +421,17 @@ function fibonacci() {
   oldInputTextNode = document.createTextNode('F');
   oldInput.appendChild(oldInputTextNode);
   oldInput.appendChild(fibonacci);
-  oldInputTextNode = document.createTextNode(" " + "=" + " ");
+  num = parseFloat(answer.split(' ')[answer.split(' ').length - 1])
+  if (operators.some((op) => op == oldOperator)) {
+    oldInputTextNode = document.createTextNode(" ");
+  } else {
+    oldInputTextNode = document.createTextNode(" " + "=" + " " + num + ' ' + "|" + ' ');
+  }
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
-  operator = "F_n";
+  numArray = [num];
+  answer = undefined;
+  operateEquateFlag = true;
 }
 
 
@@ -512,7 +528,7 @@ function toggleNegative() {
 
 function equate() {
   if (operator == undefined) return;
-
+  if (numArray[numArray.length - 1] == "^") return;
   /* Operate the equation inside of brackets */
   if (bracketValue == ")") {
     indexBracket1 = numArray.indexOf("(");
@@ -537,8 +553,8 @@ function equate() {
     operator = undefined;
     return;
 
-  /* Operate for square() and not for parenthesis when operation is a chain */
-  } else if (oldOperator && bracketValue != 'oldInput') {
+  /* Operate for square() when operation is a chain */
+  } else if (numArray.includes('^')) {
     indexOperator = numArray.indexOf('^');
     num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
     operator = "^";
@@ -557,10 +573,24 @@ function equate() {
     operatorFlag = false;
     operator = undefined;
     return;
+  } 
+  // Fibonacci with oldOperator
+  if (oldOperator && answer != 'undefined') {
+    answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+    oldInputTextNode = document.createTextNode('=' + ' ' + answer + ' ' + '|' + ' ');
+    oldInput.appendChild(oldInputTextNode);
+    newInput.textContent = answer;
+    oldOperator = undefined;
+    numArray = [0];
+    equalFlag = true;
+    operatorFlag = false;
+    operator = undefined;
+    return;
   }
   num = parseFloat(numArray.join(""));
   answer = parseFloat(stringToNumber[operator](answer, num));
-
+  
+  
   if (previousValue == '√' || previousValue == '!') {
     oldInputTextNode = document.createTextNode(
       currentValue + " " + answer + " " + "|" + " ");
@@ -584,6 +614,7 @@ function equate() {
 
 
 function operate() {
+  if (numArray[numArray.length - 1] == "^") return;
   if (bracketFlag && numArray.some((item) => operators.includes(item))) return;
 
   // Start the operation
@@ -593,8 +624,21 @@ function operate() {
 
   /* When an operator is used for the first time after a clearAll()/beginning */
   } else if (answer == undefined) {
-    answer = parseFloat(numArray.join(""));
-    num = answer;
+    if (oldOperator) {
+      answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
+      oldInputTextNode = document.createTextNode(' ' + currentValue + ' ');
+      oldInput.appendChild(oldInputTextNode);
+      newInput.textContent = answer;
+      oldOperator = undefined;
+      operator = undefined;
+      numArray = [];
+      operator = currentValue;
+      operatorFlag = true;
+      return;
+    } else {
+      answer = parseFloat(numArray.join(""));
+      num = answer;
+    }
 
   /* When an operator is used in a chain without equate() */
   } else if (!equalFlag) {
@@ -614,14 +658,14 @@ function operate() {
       answer = parseFloat(stringToNumber[operator](answer, num));
       num = answer;
 
-      /* If second equation after using a top function (i.e., square, squareroot, etc.) */
+      /* If second equation after using brackets */
       if (oldOperator) {
         answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
         oldOperator = undefined;
       }
     } else {
       /* Two equations and no brackets */
-      if (oldOperator && bracketValue != 'oldInput') {
+      if (oldOperator && numArray.includes('^')) {
         indexOperator = numArray.indexOf('^');
         num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
         operator = "^";
