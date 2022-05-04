@@ -152,8 +152,7 @@ function calculate(e) {
 
     if ((operateEquateFlag && numArray.includes('(')) || numArray.length == 0 ||
       equalFlag || ((num == 0 && !equalFlag) || (num == 0 && operateEquateFlag)) || 
-      ((num == 1 && equalFlag) || (num == 1 && operateEquateFlag)) ||
-      (answer == undefined && operateEquateFlag)) return;
+      ((num == 1 && equalFlag) || (num == 1 && operateEquateFlag))) return;
 
     deleteLast();
   }
@@ -361,55 +360,40 @@ function square() {
 
 function findSquareRoot() {
   num = 1;
-  /* If user wishes to squareroot a number after using an operator 
-    in an operation chain */ 
-  if (operators.some((op) => op == operator)) {
-    answer = parseFloat(numArray.join(""));
-    oldInputTextNode = document.createTextNode("√" + answer + " ");
-    answer = parseFloat(stringToNumber[currentValue](answer, num));
-    numArray = [answer];
-    newInput.textContent = answer;
-    oldInput.appendChild(oldInputTextNode);
-    answer = oldNumber;
-    operateEquateFlag = true;
-    return;
 
-  /* If the user only wishes to squareroot a number without other operations */
-  } else if (!equalFlag) {
+  if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
-    equalFlag = true;
+    if (!operators.some((op) => op == operator)) {
+      equalFlag = true;
+    }
   }
   oldInputTextNode = answer;
   answer = parseFloat(stringToNumber[currentValue](answer, num));
-  oldInputTextNode = document.createTextNode(
-    currentValue + oldInputTextNode + " " + "=" + " " + answer + " " + "|" + " ");
+  num = oldInputTextNode;
+  if (operators.some((op) => op == operator)) {
+    oldInputTextNode = document.createTextNode("√" + num + " ");
+  } else {
+    oldInputTextNode = document.createTextNode(
+      currentValue + oldInputTextNode + " " + "=" + " " + answer + " " + "|" + " ");
+  } 
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
+  answer = oldNumber;
+  numArray = [answer];
+  operateEquateFlag = true;
 }
 
 
 // Calculate Factorial
 function factorial() {
-  
   num = 1;
-  /* If user wishes to factorial a number after using an operator 
-    in an operation chain */ 
-  if (operators.some((op) => op == operator)) {
-    answer = parseFloat(numArray.join(""));
-    oldInputTextNode = document.createTextNode(answer + "!" + " ");
-    answer = parseFloat(stringToNumber[currentValue](answer, num));
-    numArray = [answer];
-    newInput.textContent = answer;
-    oldInput.appendChild(oldInputTextNode);
-    answer = oldNumber;
-    operateEquateFlag = true;
-    return;
-  }
-  
+
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
-    equalFlag = true;
-  } 
+    if (!operators.some((op) => op == operator)) {
+      equalFlag = true;
+    }
+  }
   if (answer > 170 || answer < -170) {
     clearAll();
     newInput.textContent = "Maximum: 170";
@@ -417,21 +401,31 @@ function factorial() {
   }
   oldInputTextNode = answer;
   answer = parseFloat(stringToNumber[currentValue](answer, num));
-  oldInputTextNode = document.createTextNode(
-    oldInputTextNode + currentValue + " " + "=" + " " + answer + " " + "|" + " ");
+  num = oldInputTextNode;
+  if (operators.some((op) => op == operator)) {
+    oldInputTextNode = document.createTextNode(num + "!" + " ");
+  } else {
+    oldInputTextNode = document.createTextNode(
+      oldInputTextNode + currentValue + " " + "=" + " " + answer + " " + "|" + " ");
+  } 
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
-  numArray = [0];
+  numArray = [answer];
+  answer = oldNumber;
+  operateEquateFlag = true;
 }
 
 
 // Calculate fibonacci sequence
 function fibonacci() {
+  
   let fibonacci = document.createElement('sub');
   num = 0;
   if (!equalFlag) {
     answer = parseFloat(numArray.join(""));
-    equalFlag = true;
+    if (!operators.some((op) => op == operator)) {
+      equalFlag = true;
+    }
   }
   if (answer > 1477) {
     clearAll();
@@ -439,12 +433,12 @@ function fibonacci() {
     return;
   }
   oldInputTextNode = document.createTextNode(answer);
-  answer = stringToNumber[currentValue](answer, num).join(" ");
   fibonacci.appendChild(oldInputTextNode);
   oldInputTextNode = document.createTextNode('F');
   oldInput.appendChild(oldInputTextNode);
   oldInput.appendChild(fibonacci);
-  num = parseFloat(answer.split(' ')[answer.split(' ').length - 1])
+  answer = stringToNumber[currentValue](answer, num).join(" ");
+  num = parseFloat(answer.split(' ')[answer.split(' ').length - 1]);
   if (operators.some((op) => op == operator)) {
     oldInputTextNode = document.createTextNode(" ");
   } else {
@@ -452,8 +446,8 @@ function fibonacci() {
   }
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
-  numArray = [num];
   answer = oldNumber;
+  numArray = [num];
   operateEquateFlag = true;
 }
 
@@ -582,6 +576,7 @@ function operate() {
 
   /* When an operator is used in a chain without equate() */
   } else if (!equalFlag) {
+    
     /* If no brackets and only one equation, continue with equalFlag path */
     if (operatorFlag) {
       equalFlag = true;
@@ -627,9 +622,7 @@ function operate() {
           num = parseFloat(numArray.slice(indexOperator + 1).join(''));
         } else {
           num = parseFloat(numArray.join(""));
-          console.log('harr');
         }
-        console.log('hurr');
         answer = parseFloat(stringToNumber[operator](answer, num));
       }
     }
