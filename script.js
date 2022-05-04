@@ -577,20 +577,8 @@ function operate() {
 
   /* When an operator is used for the first time after a clearAll()/beginning */
   } else if (answer == undefined) {
-    // if (oldOperator) {
-    //   answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
-    //   oldInputTextNode = document.createTextNode(' ' + currentValue + ' ');
-    //   oldInput.appendChild(oldInputTextNode);
-    //   newInput.textContent = answer;
-    //   oldOperator = undefined;
-    //   operator = undefined;
-    //   numArray = [];
-    //   operator = currentValue;
-    //   operatorFlag = true;
-    //   return;
-    // } else {
-      answer = parseFloat(numArray.join(""));
-      num = answer;
+    answer = parseFloat(numArray.join(""));
+    num = answer;
 
   /* When an operator is used in a chain without equate() */
   } else if (!equalFlag) {
