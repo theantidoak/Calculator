@@ -26,18 +26,13 @@ let squareArray = [];
 
 //Flags
 
-/* If true, Equal function was just used but the operation continues. 
-  Will clearAll() if digit is chosen instead of operator */
+/* If true, Equal function was just used */
 let equalFlag = false;
 /* If true, Operator function was just used */
 let operatorFlag = false;
-/* If true, Open Parenthesis & no Closed Parenthesis */
+/* If true, Open Parenthesis exists but not Closed Parenthesis */
 let bracketFlag = false;
-/* If true, a Square function is being used (after the initial '^') 
-  during a chain of operations */
-let squareFlag = false;
-/* If true, only equate(), operate(), & and clearAll() can be used 
-  after calling square(), findSquareRooot(), & factorial() */
+/* If true, Only equate, operate, & clearAll can be used */
 let operateEquateFlag = false;
 
 
@@ -235,6 +230,7 @@ function clearAll() {
   
   previousValue = undefined;
   numArray = [];
+  squareArray = [];
   answer = undefined;
   num = undefined;
   operator = undefined;
@@ -247,7 +243,6 @@ function clearAll() {
   equalFlag = false;
   operatorFlag = false;
   bracketFlag = false;
-  squareFlag = false;
   operateEquateFlag = false;
 }
 
@@ -284,9 +279,7 @@ function deleteLast() {
 
 
 function useParenthesis() {
-  if (equalFlag) {
-    clearAll();
-  }
+  if (equalFlag) return;
   
   if (currentValue == ")" && previousValue != "(" && numArray.includes("(")) {
     bracketValue = ")";
@@ -412,6 +405,7 @@ function fibonacci() {
 
 
 function makeNumber() {
+  if (equalFlag && currentValue == '.') return;
   if (equalFlag) {
     clearAll();
   }
@@ -493,7 +487,7 @@ function equate() {
   operatorFlag = false;
   equalFlag = true;
   squareArray = [];
-  numArray = [0];
+  numArray = [];
 }
 
 function operate() {
@@ -528,29 +522,20 @@ function operate() {
   
   /* oldInputs */
   if (previousValue == '√' || previousValue == '!' || previousValue == 'F_n') {
-    if (oldOperator) {
-      oldInputTextNode = document.createTextNode(currentValue + ' ');
-      oldInput.appendChild(oldInputTextNode);
-    } else {
-      oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
+    if (!oldOperator) {
+      oldInputTextNode = document.createTextNode(answer + ' ');
       oldInput.appendChild(oldInputTextNode);
     }
+    oldInputTextNode = document.createTextNode(currentValue + ' ');
+    oldInput.appendChild(oldInputTextNode);
   } else if (numArray.includes("^")) {
     oldInputTextNode = document.createTextNode(squareArray.join("") + ' ' + 
     currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
-  } else if (previousValue == ')') {
-    if (oldOperator) {
-      oldInputTextNode = document.createTextNode(num + ' ' + currentValue + ' ');
-      oldInput.appendChild(oldInputTextNode);
-    } else {
-      oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
-      oldInput.appendChild(oldInputTextNode);
-    }
-  } else if (equalFlag) {
+  } else if (equalFlag || (previousValue == ')' && !oldOperator)) {
     oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
-  } else if (!bracketFlag) {
+  } else if (!bracketFlag || (previousValue == ')' && oldOperator)) {
     oldInputTextNode = document.createTextNode(num + ' ' + currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
   }
@@ -565,13 +550,11 @@ function operate() {
   } else {
     newInput.textContent = answer;
     oldNumber = answer;
-  }
-
-  if (!bracketFlag) {
     numArray = [];
     oldOperator = undefined;
   }
   operator = currentValue;
+  squareArray = [];
   operatorFlag = true;
   equalFlag = false;
 }
