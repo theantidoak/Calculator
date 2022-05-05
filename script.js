@@ -432,11 +432,11 @@ function toggleNegative() {
     numArray = [answer];
     if (numArray[0] == "-" || answer < 0) {
       numArray = numArray * -1;
-      answer = -answer;
+      answer = answer * -1
       newInput.textContent = numArray;
     } else {
       numArray.unshift(currentValue);
-      answer = -answer;
+      answer = answer * -1;
       newInput.textContent = numArray.join("");
     }
   }
