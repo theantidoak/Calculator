@@ -23,8 +23,6 @@ let indexOperator;
 // For square
 let squareArray = [];
 
-let operateAnswer;
-
 
 //Flags
 
@@ -61,6 +59,9 @@ const stringToNumber = {
     return x ** y;
   },
   "√": function (x, y) {
+    y = 1;
+    console.log(x);
+    console.log(y);
     return Math.sqrt(x) * y;
   },
   'F_n': function (x, y) {
@@ -88,7 +89,7 @@ const stringToNumber = {
       factArray.unshift(x);
       x++;
     }
-    return factArray.reduce((start, next) => (next == 0 ? 1 : start * next), 1);
+    return factArray.reduce((start, next) => (next == 0 ? 1 : start * next), 1) + y;
   }
 };
 
@@ -326,20 +327,20 @@ function findSquareRoot() {
       equalFlag = true;
     }
   }
-  oldInputTextNode = answer;
+  num = answer;
   answer = parseFloat(stringToNumber[currentValue](answer, num));
-  operateAnswer = answer;
-  num = oldInputTextNode;
   if (operators.some((op) => op == operator)) {
     oldInputTextNode = document.createTextNode("√" + num + " ");
+    oldOperator = operator;
   } else {
     oldInputTextNode = document.createTextNode(
-      currentValue + oldInputTextNode + " " + "=" + " " + answer + " " + "|" + " ");
+      currentValue + num + " " + "=" + " " + answer + " " + "|" + " ");
   } 
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
-  answer = oldNumber;
+  operator = currentValue;
   numArray = [answer];
+  console.log(equalFlag);
 }
 
 
@@ -358,20 +359,19 @@ function factorial() {
     newInput.textContent = "Maximum: 170";
     return;
   }
-  oldInputTextNode = answer;
+  num = answer;
   answer = parseFloat(stringToNumber[currentValue](answer, num));
-  num = oldInputTextNode;
   if (operators.some((op) => op == operator)) {
     oldInputTextNode = document.createTextNode(num + "!" + " ");
+    oldOperator = operator;
   } else {
     oldInputTextNode = document.createTextNode(
-      oldInputTextNode + currentValue + " " + "=" + " " + answer + " " + "|" + " ");
+      num + currentValue + " " + "=" + " " + answer + " " + "|" + " ");
   } 
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
+  operator = currentValue;
   numArray = [answer];
-  answer = oldNumber;
-  operateAnswer = answer;
 }
 
 
@@ -396,18 +396,18 @@ function fibonacci() {
   oldInputTextNode = document.createTextNode('F');
   oldInput.appendChild(oldInputTextNode);
   oldInput.appendChild(fibonacci);
-  answer = stringToNumber[currentValue](answer, num).join(" ");
-  num = parseFloat(answer.split(' ')[answer.split(' ').length - 1]);
+  num = stringToNumber[currentValue](answer, num).join(" ");
+  answer = parseFloat(num.split(' ')[num.split(' ').length - 1]);
   if (operators.some((op) => op == operator)) {
     oldInputTextNode = document.createTextNode(" ");
+    oldOperator = operator;
   } else {
-    oldInputTextNode = document.createTextNode(" " + "=" + " " + num + ' ' + "|" + ' ');
+    oldInputTextNode = document.createTextNode(" " + "=" + " " + answer + ' ' + "|" + ' ');
   }
   oldInput.appendChild(oldInputTextNode);
-  newInput.textContent = answer;
-  answer = oldNumber;
-  operateAnswer = answer;
-  numArray = [num];
+  newInput.textContent = num;
+  operator = currentValue;
+  numArray = [answer]; 
 }
 
 
@@ -449,11 +449,13 @@ function equate() {
   if (bracketValue == ")" || numArray.includes('^')) {
     num = parseFloat(numArray.slice(indexOperator + 1).join(""));
     squareArray.push(num);
+    if (oldOperator) {
+      answer = parseFloat(stringToNumber[operator](answer, num));
+    }
   } else {
     num = parseFloat(numArray.join(""));
   }
   if (oldOperator) {
-    answer = parseFloat(stringToNumber[operator](answer, num));
     num = answer;
     answer = oldNumber;
     operator = oldOperator;
@@ -504,40 +506,52 @@ function operate() {
   } else if (answer == undefined) {
     answer = parseFloat(numArray.join(""));
     num = answer;
-  
   } else if (!equalFlag) {
-    
     if (bracketValue == ")" || numArray.includes('^')) {
       num = parseFloat(numArray.slice(indexOperator + 1).join(""));
       squareArray.push(num);
+      bracketValue = undefined;
+      if (oldOperator) {
+        answer = parseFloat(stringToNumber[operator](answer, num));
+      }
     } else {
-
       num = parseFloat(numArray.join(""));
-      console.log(num);
-      answer = operateAnswer;
-      console.log(answer);
     }
     if (oldOperator) {
-      answer = parseFloat(stringToNumber[operator](answer, num));
       num = answer;
       answer = oldNumber;
       operator = oldOperator;
     }
     answer = parseFloat(stringToNumber[operator](answer, num)); 
   }
-  operateAnswer = answer;
 
   
   /* oldInputs */
   if (previousValue == '√' || previousValue == '!' || previousValue == 'F_n') {
-    oldInputTextNode = document.createTextNode(currentValue + " ");
-    oldInput.appendChild(oldInputTextNode);
+    if (oldOperator) {
+      oldInputTextNode = document.createTextNode(currentValue + ' ');
+      oldInput.appendChild(oldInputTextNode);
+    } else {
+      oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
+      oldInput.appendChild(oldInputTextNode);
+    }
   } else if (numArray.includes("^")) {
-    oldInputTextNode = document.createTextNode(squareArray.join("") + ' ' +  
-      currentValue + ' ');
+    oldInputTextNode = document.createTextNode(squareArray.join("") + ' ' + 
+    currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
-  } else if (bracketValue != ")" || (bracketValue == ")" && oldOperator)) {
-    oldInputTextNode = document.createTextNode(num + " " + currentValue + " ");
+  } else if (previousValue == ')') {
+    if (oldOperator) {
+      oldInputTextNode = document.createTextNode(num + ' ' + currentValue + ' ');
+      oldInput.appendChild(oldInputTextNode);
+    } else {
+      oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
+      oldInput.appendChild(oldInputTextNode);
+    }
+  } else if (equalFlag) {
+    oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
+    oldInput.appendChild(oldInputTextNode);
+  } else if (!bracketFlag) {
+    oldInputTextNode = document.createTextNode(num + ' ' + currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
   }
 
@@ -545,13 +559,9 @@ function operate() {
   if (bracketFlag) {
     numArray.push(currentValue);
     newInput.textContent = numArray.join("");
-  } else if (isNaN(answer)) {
+  } else if (isNaN(answer) || answer == Infinity) {
     clearAll();
     newInput.textContent = "Error";
-  } else if (answer == Infinity) {
-    clearAll();
-    answer = 0;
-    newInput.textContent = answer;
   } else {
     newInput.textContent = answer;
     oldNumber = answer;
@@ -559,7 +569,9 @@ function operate() {
 
   if (!bracketFlag) {
     numArray = [];
+    oldOperator = undefined;
   }
   operator = currentValue;
   operatorFlag = true;
+  equalFlag = false;
 }
