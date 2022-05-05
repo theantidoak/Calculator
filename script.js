@@ -23,6 +23,8 @@ let indexOperator;
 // For square
 let squareArray = [];
 
+let operateAnswer;
+
 
 //Flags
 
@@ -326,6 +328,7 @@ function findSquareRoot() {
   }
   oldInputTextNode = answer;
   answer = parseFloat(stringToNumber[currentValue](answer, num));
+  operateAnswer = answer;
   num = oldInputTextNode;
   if (operators.some((op) => op == operator)) {
     oldInputTextNode = document.createTextNode("√" + num + " ");
@@ -368,6 +371,7 @@ function factorial() {
   newInput.textContent = answer;
   numArray = [answer];
   answer = oldNumber;
+  operateAnswer = answer;
 }
 
 
@@ -402,6 +406,7 @@ function fibonacci() {
   oldInput.appendChild(oldInputTextNode);
   newInput.textContent = answer;
   answer = oldNumber;
+  operateAnswer = answer;
   numArray = [num];
 }
 
@@ -489,123 +494,54 @@ function equate() {
   numArray = [0];
 }
 
-
 function operate() {
   if (numArray[numArray.length - 1] == "^") return;
   if (bracketFlag && numArray.some((item) => operators.includes(item))) return;
 
-  // Calculating
-  /* When there is only an open bracket */
+  /* Calculating */
   if (bracketFlag) {
     answer = numArray.join("");
-
-  /* When an operator is used for the first time after a clearAll()/beginning */
   } else if (answer == undefined) {
     answer = parseFloat(numArray.join(""));
     num = answer;
-
-  /* When an operator is used in a chain without equate() */
+  
   } else if (!equalFlag) {
     
-    /* If no brackets and only one equation, continue with equalFlag path */
-    if (operatorFlag) {
-      equalFlag = true;
+    if (bracketValue == ")" || numArray.includes('^')) {
+      num = parseFloat(numArray.slice(indexOperator + 1).join(""));
+      squareArray.push(num);
+    } else {
 
-    /* If bracket equation is operated in a chain without equate() */
-    } else if (previousValue == ")") {
-      indexBracket1 = numArray.indexOf("(");
-      indexOperator = numArray.indexOf(operator);
-      indexBracket2 = numArray.indexOf(")");
-      answer = parseFloat(
-        numArray.slice(indexBracket1 + 1, indexOperator).join(""));
-      num = parseFloat(
-        numArray.slice(indexOperator + 1, indexBracket2).join(""));
+      num = parseFloat(numArray.join(""));
+      console.log(num);
+      answer = operateAnswer;
+      console.log(answer);
+    }
+    if (oldOperator) {
       answer = parseFloat(stringToNumber[operator](answer, num));
       num = answer;
-
-      /* If second equation after using brackets */
-      if (oldOperator) {
-        answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
-        oldOperator = undefined;
-      }
-    } else {
-      /* Two equations and no brackets */
-      if (oldOperator && numArray.includes('^')) {
-        indexOperator = numArray.indexOf('^');
-        num = parseFloat(numArray.slice((indexOperator + 1)).join(''));
-        operator = "^";
-        oldInputTextNode = document.createTextNode(answer + operator + num + ' ' + currentValue + ' ');
-        oldInput.appendChild(oldInputTextNode);
-        answer = parseFloat(stringToNumber[operator](answer, num));
-        numArray = num;
-        num = answer;
-        answer = parseFloat(stringToNumber[oldOperator](oldNumber, num));
-        newInput.textContent = answer;
-        oldOperator = undefined;
-        equalFlag = true;
-        operator = undefined;
-        squareFlag = true;
-      } else {
-        if (numArray.includes("^")) {
-          oldNumber = answer;
-          indexOperator = numArray.indexOf("^");
-          num = parseFloat(numArray.slice(indexOperator + 1).join(''));
-        } else {
-          num = parseFloat(numArray.join(""));
-        }
-        answer = parseFloat(stringToNumber[operator](answer, num));
-      }
+      answer = oldNumber;
+      operator = oldOperator;
     }
+    answer = parseFloat(stringToNumber[operator](answer, num)); 
+  }
+  operateAnswer = answer;
+
+  
+  /* oldInputs */
+  if (previousValue == '√' || previousValue == '!' || previousValue == 'F_n') {
+    oldInputTextNode = document.createTextNode(currentValue + " ");
+    oldInput.appendChild(oldInputTextNode);
+  } else if (numArray.includes("^")) {
+    oldInputTextNode = document.createTextNode(squareArray.join("") + ' ' +  
+      currentValue + ' ');
+    oldInput.appendChild(oldInputTextNode);
+  } else if (bracketValue != ")" || (bracketValue == ")" && oldOperator)) {
+    oldInputTextNode = document.createTextNode(num + " " + currentValue + " ");
+    oldInput.appendChild(oldInputTextNode);
   }
 
-  // oldInput Text to display previous answers in small text
-  if (equalFlag) {
-    /* oldInput for squareRoot function */
-    if (num == 1) {
-      oldInputTextNode = document.createTextNode(answer + " " + currentValue + " ");
-      oldInput.appendChild(oldInputTextNode);
-
-    /* oldInput after closed bracket */
-    } else if (bracketValue == "closed") {
-      oldInputTextNode = document.createTextNode(
-        answer + " " + currentValue + " ");
-      oldInput.appendChild(oldInputTextNode);
-
-    /* No oldInput after the pressing '^' (i.e., the first half of square()) */
-    } else if (squareFlag) {
-      squareFlag = false;
-      numArray = [0];
-    } else {
-      oldInputTextNode = document.createTextNode(
-        answer + " " + currentValue + " ");
-      oldInput.appendChild(oldInputTextNode);
-    }
-    equalFlag = false;
-    
-  } else if (!bracketFlag) {
-    if (previousValue == ")") {
-      oldInputTextNode = document.createTextNode(
-        num + " " + currentValue + " ");
-      oldInput.appendChild(oldInputTextNode);
-      bracketValue = undefined;
-    } else if (previousValue == "√" || previousValue == '!' || previousValue == 'F_n') {
-      oldInputTextNode = document.createTextNode(currentValue + " ");
-      oldInput.appendChild(oldInputTextNode);
-    } else {
-      /* oldInput once square() has been operated after the second number */
-      if (operator == "^") {
-        oldInputTextNode = document.createTextNode(oldNumber + operator + 
-          num + ' ' + currentValue + ' ');
-        oldNumber = undefined;
-      } else {
-        oldInputTextNode = document.createTextNode(
-          num + " " + currentValue + " ");
-      }
-      oldInput.appendChild(oldInputTextNode);
-    }
-  }
-
-  // newInput Text to display new answers in big text
+  /* newInputs */
   if (bracketFlag) {
     numArray.push(currentValue);
     newInput.textContent = numArray.join("");
