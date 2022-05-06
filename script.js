@@ -4,38 +4,26 @@ const buttons = document.querySelectorAll("button");
 const operators = ["÷", "×", "−", "+"];
 const numbers = document.querySelectorAll("[data-key]");
 
-// Values
 let currentValue;
 let previousValue;
-// For each calculation
 let numArray = [];
 let answer;
 let num;
 let operator;
-// If chain of operations
 let oldNumber;
 let oldOperator;
-// For parenthesis
-let bracketValue;
-let indexBracket1;
 let indexOperator;
-// For square
 let squareArray = [];
 
-let operation;
-
-
-//Flags
-
+// Flags
 /* If true, Equal function was just used */
 let equalFlag = false;
 /* If true, Operator function was just used */
 let operatorFlag = false;
-/* If true, Open Parenthesis exists but not Closed Parenthesis */
+/* If true, Open Parenthesis exists without Closed Parenthesis */
 let bracketFlag = false;
 /* If true, Only equate, operate, & clearAll can be used */
 let operateEquateFlag = false;
-
 
 // Math functions
 const stringToNumber = {
@@ -93,7 +81,6 @@ window.addEventListener("keydown", calculate);
 /* Master Function to call each button */
 function calculate(e) {
 
-  // Use keydown to operate the calculator
   if (e.keyCode && [...numbers].some((number) => number.dataset.key == e.keyCode)) {
     if (e.shiftKey) {
       if (e.keyCode == 49) {
@@ -116,15 +103,12 @@ function calculate(e) {
         (number) => number.dataset.key == e.keyCode)[0].value;
     }
   } else {
-    // Using buttons to operate the Calculator
     currentValue = this.value;
   }
   
   /* Choose a number or decimal */
   if (currentValue < 10 || currentValue == ".") {
-    if (numArray.includes('^')) {
-      operateEquateFlag = false;
-    }
+    operateEquateFlag = numArray.includes('^') ? true : false;
     if (operateEquateFlag || (numArray.includes(".") && currentValue == ".")) return;
     makeNumber();
     operatorFlag = false;
@@ -149,25 +133,18 @@ function calculate(e) {
 
   /* Delete one character */
   if (currentValue == "delete") {
-
     if ((operateEquateFlag && numArray.includes('(')) || numArray.length == 0 ||
       equalFlag || ((num == 0 && !equalFlag) || (num == 0 && operateEquateFlag)) || 
       ((num == 1 && equalFlag) || (num == 1 && operateEquateFlag))) return;
-
     deleteLast();
   }
   
-  /* If an operator is selected, then immediately another operator is selected,
-    change the operator and oldInput to reflect the new operator */
-  if (
-    numArray.length == 0 &&
-    operators.some((op) => op == currentValue) &&
-    operators.some((op) => op == previousValue)
-  ) {
+  /* Changing operator before calculation */
+  if (numArray.length == 0 && operators.some((op) => op == currentValue) &&
+  operators.some((op) => op == previousValue)) {
     operator = currentValue;
-    oldInput.removeChild(oldInput.lastChild);
     oldInputTextNode = document.createTextNode(oldNumber + " " + currentValue + " ");
-    oldInput.appendChild(oldInputTextNode);
+    oldInput.replaceChild(oldInputTextNode, oldInput.lastChild)
   }
 
   /* Don't allow the same operator or functions to run more than once */
@@ -204,8 +181,6 @@ function clearAll() {
   operator = undefined;
   oldNumber = undefined;
   oldOperator = undefined;
-  bracketValue = undefined;
-  indexBracket1 = undefined;
   indexOperator = undefined;
   equalFlag = false;
   operatorFlag = false;
@@ -218,7 +193,6 @@ function deleteLast() {
   let pop = numArray.pop();
   if (pop == ')' || pop == '(') {
     bracketFlag = !bracketFlag;
-    bracketValue = undefined;
     if (pop == '(') {
       answer = undefined;
     }
@@ -258,10 +232,8 @@ function useParenthesis() {
   
   if (currentValue == ")" && operators.some(op => numArray.includes(op)) && 
   numArray.includes("(") && !isNaN(numArray[numArray.length - 1])) {
-    bracketValue = ")";
-    indexBracket1 = numArray.indexOf("(");
     indexOperator = numArray.indexOf(operator);
-    answer = parseFloat(numArray.slice(indexBracket1 + 1, indexOperator).join(""));
+    answer = parseFloat(numArray.slice(numArray.indexOf("(") + 1, indexOperator).join(""));
     numArray.push(currentValue);
     operateEquateFlag = true;
     bracketFlag = !bracketFlag;
@@ -364,7 +336,7 @@ function calculateTopFunction() {
 
 
 function operateAndEquate() {
-  currentValue == "=" ? operation = false : operation = true;
+  const operation = currentValue == "=" ? false : true;
 
   if (operation){
     if (bracketFlag && numArray.some((item) => operators.includes(item))) return;
@@ -379,7 +351,7 @@ function operateAndEquate() {
     answer = parseFloat(numArray.join(""));
     num = answer;
   } else if (!equalFlag) {
-    if (bracketValue == ")" || numArray.includes('^')) {
+    if (previousValue == ")" || numArray.includes('^')) {
       num = parseFloat(numArray.slice(indexOperator + 1).join(""));
       squareArray.push(num);
       if (oldOperator) {
@@ -413,8 +385,8 @@ function operateAndEquate() {
     oldInputTextNode = document.createTextNode(answer + ' ' + currentValue + ' ');
     oldInput.appendChild(oldInputTextNode);
   } else if ((!bracketFlag && operation) || 
-    (bracketValue != ")" && !operation) ||
-    (previousValue == ')' && oldOperator)) {
+    (previousValue != ")" && !operation) ||
+    (previousValue == ")" && oldOperator)) {
     oldInputTextNode = document.createTextNode(num + " " + currentValue + " ");
     oldInput.appendChild(oldInputTextNode);
   }
@@ -440,7 +412,7 @@ function operateAndEquate() {
     numArray = [];
     oldOperator = undefined;
   }
-  
+
   if (operation) {
     operator = currentValue;
     squareArray = [];
@@ -456,5 +428,4 @@ function operateAndEquate() {
     squareArray = [];
     numArray = [0];
   }
-  bracketValue = undefined;
 }
