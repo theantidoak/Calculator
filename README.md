@@ -1,5 +1,7 @@
 # Calculator
 
+Edit: I simplified the functions, cleaned the code, and changed variable names to make it more readable. The .js file was shortened by 300 lines.
+
 This is the third and final project of the javascript module in the The Odin Project Foundations course, the central source of my web development resources.
 
 The goal for this calculator is to give the user an easy to use calculator with four operators (+, -, /, *) and four 'top functions' (square, squareroot, factorial, fibonacci) with a clear all button, a delete button, bracket buttons, a decimal button, and a negative button.
