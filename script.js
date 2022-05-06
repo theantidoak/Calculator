@@ -16,7 +16,6 @@ let oldOperator;
 let indexOperator;
 let topFunction;
 
-
 /* If true, Equal function was just used, allowing the answer to be manipulated */
 let equalFlag = false;
 /* If true, there is an open bracket, changing the normal operation */
@@ -124,7 +123,6 @@ function calculate(e) {
   if (currentValue == "delete") {
     if ((operateEquateFlag && !numArray.includes('^') && 
     numArray[numArray.length-1] != ")") || numArray.length == 0 || equalFlag) return;
-      
     deleteLast();
   }
   
@@ -170,6 +168,7 @@ function clearAll() {
   oldNumber = undefined;
   oldOperator = undefined;
   indexOperator = undefined;
+  oldInputTextNode = undefined;
   equalFlag = false;
   bracketFlag = false;
   operateEquateFlag = false;
@@ -177,7 +176,7 @@ function clearAll() {
 
 
 function deleteLast() {
-  let pop = numArray.pop();
+  const pop = numArray.pop();
   if (pop == ')' || pop == '(') {
     bracketFlag = !bracketFlag;
     if (pop == '(') {
@@ -204,9 +203,9 @@ function deleteLast() {
     }
     operateEquateFlag = false;
   }
-  
   newInput.textContent = numArray.join("");
 }
+
 
 function writeNumber() {
   if (equalFlag) {
@@ -215,6 +214,7 @@ function writeNumber() {
   numArray.push(currentValue);
   newInput.textContent = numArray.join("");
 }
+
 
 function toggleNegative() {
   if (!equalFlag) {
@@ -239,7 +239,6 @@ function toggleNegative() {
 
 
 function useParenthesis() {
-
   if (currentValue == ")" && operators.some(op => numArray.includes(op)) && 
   numArray.includes("(") && !isNaN(numArray[numArray.length - 1]) && !equalFlag) {
     indexOperator = numArray.indexOf(operator);
@@ -329,15 +328,16 @@ function calculateTopFunction() {
 
 function operateAndEquate() {
   const operation = currentValue == "=" ? false : true;
-  // operation = currentValue == operators
-  // !operation = currentValue == "="
+  /* operation : currentValue == operators.some() */
+  /* !operation : currentValue == "=" */
 
   if (operation){
     if (bracketFlag && numArray.some((op) => operators.includes(op))) return;
   } else {
     if (equalFlag || bracketFlag) return;
   }
-  /* Calculating */
+
+  /* Calculate */
   if (bracketFlag) {
     answer = numArray.join("");
   } else if (answer == undefined) {
@@ -362,9 +362,7 @@ function operateAndEquate() {
     answer = parseFloat(stringToNumber[operator](answer, num));
   }
    
-
-  /* oldInputs */
-  
+  /* Display oldInput */
   if (topFunction == '√' || topFunction == '!' || topFunction == 'F_n') {
     if (operation && !oldOperator) {
       oldInputTextNode = document.createTextNode(answer + ' ');
@@ -391,8 +389,7 @@ function operateAndEquate() {
     oldInput.appendChild(oldInputTextNode);
   }
 
-
-  /* newInputs */
+  /* Display newInput */
   if (operation && bracketFlag) {
     numArray.push(currentValue);
     newInput.textContent = numArray.join("");
@@ -403,12 +400,12 @@ function operateAndEquate() {
     newInput.textContent = answer;
   }
 
+  /* Prepare for next Calculation */
   if (operation && !bracketFlag) {
     oldNumber = answer;
     numArray = [];
     oldOperator = undefined;
   }
-
   if (operation) {
     operator = currentValue;
     squareArray = [];
