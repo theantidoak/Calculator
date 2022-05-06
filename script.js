@@ -152,9 +152,6 @@ function calculate(e) {
     operateAndEquate();
     operateEquateFlag = false;
   }
-  console.log(answer);
-  console.log(newNumber);
-  console.log(oldAnswer);
 }
 
 
