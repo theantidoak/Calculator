@@ -125,11 +125,15 @@ function calculate(e) {
     deleteLast();
     
   }
-  
+
   if (currentValue == "(" || currentValue == ")") {
     useParenthesis();
   }
 
+  if ((!bracketFlag && isNaN(numArray.join('')) && !numArray.includes(')')) ||
+    (numArray.length == 0 && operator == undefined)) return;
+
+    
   /* Top Functions */
   if (((currentValue == "^" && !numArray.includes('^')) || currentValue == "√" || 
    currentValue == "F_n" || currentValue == "!") && !bracketFlag) {
@@ -142,7 +146,7 @@ function calculate(e) {
   operators.some((op) => op == operator)) {
     operator = currentValue;
     if (!operators.some(op => op == oldInput.lastChild.textContent.trim())) {
-      oldInputTextNode = document.createTextNode(oldAnswer + " " + currentValue + " ");
+      oldInputTextNode = document.createTextNode(newNumber + " " + currentValue + " ");
       oldInput.replaceChild(oldInputTextNode, oldInput.lastChild);
     } else {
       oldInputTextNode = document.createTextNode(currentValue + " ");
@@ -154,6 +158,7 @@ function calculate(e) {
   /* Use equal sign or operator */
   if ((currentValue == "=" || operators.some((op) => op == currentValue)) &&
       numArray[numArray.length - 1] != "^") {
+    if (numArray.length == 1 && numArray[0] == '(') return;
     operateAndEquate();
     operateEquateFlag = false;
   }
@@ -436,6 +441,7 @@ function operateAndEquate() {
     equalFlag = false;
   } else {
     oldAnswer = answer;
+    newNumber = answer;
     operator = undefined;
     oldOperator = undefined;
     bracketFlag = false;
