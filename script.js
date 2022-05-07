@@ -122,6 +122,7 @@ function calculate(e) {
     if ((operateEquateFlag && !numArray.includes('^') && 
     numArray[numArray.length-1] != ")") || numArray.length == 0 || equalFlag) return;
     deleteLast();
+    
   }
   
   if (currentValue == "(" || currentValue == ")") {
@@ -220,6 +221,8 @@ function writeNumber() {
     }
     equalFlag = false;
     answer = undefined;
+    operateEquateFlag = false;
+    topFunction = undefined;
   }
   numArray.push(currentValue);
   newInput.textContent = numArray.join("");
