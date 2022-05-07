@@ -105,13 +105,11 @@ function calculate(e) {
   }
 
   if (currentValue < 10 || currentValue == ".") {
-    numArray.includes('^') ? operateEquateFlag = false : undefined;
-    if (operateEquateFlag || (numArray.includes(".") && currentValue == ".") ||
-    (equalFlag && currentValue == '.')) return;
+    if (Array.from(newInput.textContent).includes(".") && currentValue == ".") return;
     writeNumber();
   }
 
-  if (currentValue == "-" && !operateEquateFlag) {
+  if (currentValue == "-") {
     toggleNegative();
   }
 
@@ -132,7 +130,7 @@ function calculate(e) {
 
   /* Top Functions */
   if (((currentValue == "^" && !numArray.includes('^')) || currentValue == "√" || 
-   currentValue == "F_n" || currentValue == "!") && !bracketFlag && !operateEquateFlag) {
+   currentValue == "F_n" || currentValue == "!") && !bracketFlag) {
     calculateTopFunction();
     operateEquateFlag = true;
   }
@@ -141,8 +139,13 @@ function calculate(e) {
   if (numArray.length == 0 && operators.some((op) => op == currentValue) &&
   operators.some((op) => op == operator)) {
     operator = currentValue;
-    oldInputTextNode = document.createTextNode(oldAnswer + " " + currentValue + " ");
-    oldInput.replaceChild(oldInputTextNode, oldInput.lastChild);
+    if (!operators.some(op => op == oldInput.lastChild.textContent.trim())) {
+      oldInputTextNode = document.createTextNode(oldAnswer + " " + currentValue + " ");
+      oldInput.replaceChild(oldInputTextNode, oldInput.lastChild);
+    } else {
+      oldInputTextNode = document.createTextNode(currentValue + " ");
+      oldInput.replaceChild(oldInputTextNode, oldInput.lastChild);
+    }
     return;
   }
 
@@ -209,7 +212,14 @@ function deleteLast() {
 
 function writeNumber() {
   if (equalFlag) {
-    clearAll();
+    if (currentValue == ".") {
+    numArray = [answer];
+    } else {
+    numArray = [];
+    newInput.textContent = '';
+    }
+    equalFlag = false;
+    answer = undefined;
   }
   numArray.push(currentValue);
   newInput.textContent = numArray.join("");
@@ -265,6 +275,9 @@ function calculateTopFunction() {
     if (!operators.some((op) => op == operator) && currentValue != '^') {
       equalFlag = true;
     }
+  }
+  if (topFunction) {
+    topFunction = undefined;
   }
   switch (currentValue) {
     case "^":
@@ -328,7 +341,7 @@ function calculateTopFunction() {
 
 function operateAndEquate() {
   const operation = currentValue == "=" ? false : true;
-  /* operation : currentValue == operators.some() */
+  /* operation : currentValue == operator */
   /* !operation : currentValue == "=" */
 
   if (operation){
@@ -359,6 +372,7 @@ function operateAndEquate() {
       answer = oldAnswer;
       operator = oldOperator;
     }
+    
     answer = parseFloat(stringToNumber[operator](answer, newNumber));
   }
    
