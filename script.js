@@ -105,7 +105,8 @@ function calculate(e) {
   }
 
   if (currentValue < 10 || currentValue == ".") {
-    if (Array.from(newInput.textContent).includes(".") && currentValue == ".") return;
+    if (Array.from(newInput.textContent).includes(".") && 
+      currentValue == "." && !operator) return;
     writeNumber();
   }
 
@@ -376,7 +377,13 @@ function operateAndEquate() {
       operator = oldOperator;
     }
     
+
+
     answer = parseFloat(stringToNumber[operator](answer, newNumber));
+
+    if (answer.toString().includes('.')) {
+      answer = round(answer);
+    }
   }
    
   /* Display oldInput */
@@ -436,4 +443,13 @@ function operateAndEquate() {
     squareArray = [];
     numArray = [0];
   }
+}
+
+function round(roundNumber) {
+  roundNumber = roundNumber.toPrecision(12).split('');
+  while (roundNumber[roundNumber.length-1] == 0) {
+      roundNumber.pop();
+  }
+  roundNumber = parseFloat(roundNumber.join(''));
+  return roundNumber;
 }
