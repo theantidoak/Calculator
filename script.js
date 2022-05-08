@@ -121,7 +121,8 @@ function calculate(e) {
 
   if (currentValue == "delete") {
     if ((operateEquateFlag && !numArray.includes('^') && 
-    numArray[numArray.length-1] != ")") || numArray.length == 0 || equalFlag) return;
+    numArray[numArray.length-1] != ")" && numArray[numArray.length-1] != "(") || 
+    numArray.length == 0 || equalFlag) return;
     deleteLast();
     
   }
@@ -272,6 +273,7 @@ function useParenthesis() {
   } else if ((currentValue == "(") && equalFlag){
     numArray = ['(', answer];
     bracketFlag = !bracketFlag;
+    topFunction = undefined;
     equalFlag = false;
   }
   newInput.textContent = numArray.join("");
@@ -410,8 +412,8 @@ function operateAndEquate() {
   } else if ((!bracketFlag && operation) || 
     (numArray[numArray.length - 1] != ")" && !operation) ||
     (numArray[numArray.length - 1] == ")" && oldOperator)) {
-    oldInputTextNode = document.createTextNode(newNumber + " " + currentValue + " ");
-    oldInput.appendChild(oldInputTextNode);
+      oldInputTextNode = document.createTextNode(newNumber + " " + currentValue + " ");
+      oldInput.appendChild(oldInputTextNode);
   }
   if (!operation) {
     oldInputTextNode = document.createTextNode(answer + " " + "|" + " ");
