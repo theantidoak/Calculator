@@ -120,9 +120,7 @@ function calculate(e) {
   }
 
   if (currentValue == "delete") {
-    if ((operateEquateFlag && !numArray.includes('^') && 
-    numArray[numArray.length-1] != ")" && numArray[numArray.length-1] != "(") || 
-    numArray.length == 0 || equalFlag) return;
+    if (numArray.length == 0) return;
     deleteLast();
     
   }
@@ -187,6 +185,16 @@ function clearAll() {
 
 
 function deleteLast() {
+  if (equalFlag || operateEquateFlag) {
+    operateEquateFlag = false;
+    equalFlag = false;
+    answer = undefined;
+    newNumber = undefined;
+    oldAnswer = undefined;
+    operator = undefined;
+    oldOperator = undefined;
+  }
+  
   const pop = numArray.pop();
   if (pop == ')' || pop == '(') {
     bracketFlag = !bracketFlag;
